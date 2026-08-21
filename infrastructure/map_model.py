@@ -1,14 +1,14 @@
 from enum import Enum
-import importlib
 from typing import Optional
 
 try:
-    pydantic = importlib.import_module("pydantic")
-    BaseModel = pydantic.BaseModel
-    Field = pydantic.Field
-    ValidationError = pydantic.ValidationError
-    model_validator = pydantic.model_validator
-    field_validator = pydantic.field_validator
+    from pydantic import (
+        BaseModel,
+        Field,
+        ValidationError,
+        model_validator,
+        field_validator
+    )
 except (ModuleNotFoundError, ImportError) as e:
     raise ModuleNotFoundError(f"{type(e).__name__}: {e}")
 
@@ -50,13 +50,13 @@ class Meta(BaseModel):
         if not v:
             return None
         if any(ch.isspace() for ch in v):
-            raise ValueError(f"color must be a single word, got: '{v}'")
+            raise ValidationError(f"color must be a single word, got: '{v}'")
         return v.lower()
- 
+
     @property
     def cost(self) -> int | None:
         return self.zone.cost
- 
+
     @property
     def is_traversable(self) -> bool:
         return self.zone.is_crossable
@@ -73,9 +73,9 @@ class Hub(BaseModel):
     def validate_name(cls, v: str) -> str:
         v = v.strip()
         if not v:
-            raise ValueError("Hub name must not be empty")
+            raise ValidationError("Hub name must not be empty")
         if "-" in v:
-            raise ValueError(f"Hub name must not contain '-': '{v}'")
+            raise ValidationError(f"Hub name must not contain '-': '{v}'")
         return v
 
 
@@ -87,7 +87,9 @@ class Con(BaseModel):
     @model_validator(mode="after")
     def check_no_self_loop(self) -> "Con":
         if self.left == self.right:
-            raise ValueError(f"Self-loop connection not allowed: '{self.left}-{self.right}'")
+            msg1 = "Self-loop connection not allowed: "
+            msg2 = f"'{self.left}-{self.right}'"
+            raise ValidationError(msg1 + msg2)
         return self
 
 
@@ -119,15 +121,16 @@ class MapModel(BaseModel):
         if dupes:
             raise ValueError(f"Duplicate hub name(s): {sorted(dupes)}")
         return self
- 
+
     @model_validator(mode="after")
     def check_start_end_not_blocked(self) -> "MapModel":
         if not self.start_hub.meta.zone.is_crossable:
-            raise ValueError(f"start_hub '{self.start_hub.name}' cannot be blocked")
+            raise ValueError(
+                f"start_hub '{self.start_hub.name}' cannot be blocked")
         if not self.end_hub.meta.zone.is_crossable:
-            raise ValueError(f"end_hub '{self.end_hub.name}' cannot be blocked")
+            raise ValueError(
+                f"end_hub '{self.end_hub.name}' cannot be blocked")
         return self
-
 
     def get_hub(self, name: str) -> Hub:
         if self.start_hub.name == name:

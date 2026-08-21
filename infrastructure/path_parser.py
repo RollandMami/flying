@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from typing import Any
-from pathlib import Path
 
 
 class BaseParser(ABC):
@@ -80,11 +79,11 @@ class TxtParser(BaseParser):
     def load(self, path: str) -> dict[str, Any]:
         if not path:
             raise ValueError("Path must be valid path name")
-        if not Path.is_file(path):
-            raise FileNotFoundError("Path must show a file")
 
         try:
             self.set_path(path)
+            if self._path is None:
+                raise ValueError("Path must be valid path name")
             result: dict[str, Any] = {"hubs": [], "connections": []}
             with open(self._path, "r") as maps:
                 for raw_line in maps:
@@ -107,7 +106,7 @@ class TxtParser(BaseParser):
                         result["hubs"].append(self.parse_hub_line(arg))
                     elif label == "connection":
                         data = self.parse_connection_line(arg)
-                        pair = frozenset((data["left"]), data["right"])
+                        pair = frozenset((data["left"], data["right"]))
                         is_duplicate = any(
                             frozenset((cur["left"], cur["right"])) == pair
                             for cur in result["connections"]
