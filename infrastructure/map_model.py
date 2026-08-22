@@ -1,5 +1,6 @@
 from enum import Enum
 from typing import Optional
+import webcolors
 
 try:
     from pydantic import (
@@ -49,7 +50,11 @@ class Meta(BaseModel):
         if not v:
             return None
         if any(ch.isspace() for ch in v):
-            raise ValueError(f"color must be a single word, got: '{v}'")
+            raise ValueError(f"color must be a single word, got: {v!r}")
+        try:
+            webcolors.name_to_hex(v, spec="css3")
+        except ValueError:
+            raise ValueError(f"unknown color name: {v!r}")
         return v.lower()
 
     @property
@@ -63,8 +68,8 @@ class Meta(BaseModel):
 
 class Hub(BaseModel):
     name: str
-    x: float
-    y: float
+    x: int
+    y: int
     meta: Meta = Field(default_factory=Meta)
 
     @field_validator("name")

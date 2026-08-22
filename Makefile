@@ -31,5 +31,15 @@ lint-strict: install
 	@uv run flake8 . --exclude=.venv
 	@uv run mypy . --strict --exclude="^\.venv"
 
-.PHONY: install run debug clean fclean lint lint-strict
+push:
+	@if [ -z "$(m)" ]; then \
+		echo "Erreur : Veuillez spécifier un message de commit."; \
+		echo "Usage : make push m=\"votre message\""; \
+		exit 1; \
+	fi
+	git add .
+	git commit -m "$(m)"
+	git push
+
+.PHONY: install run debug clean fclean lint lint-strict push
 

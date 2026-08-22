@@ -12,6 +12,10 @@ dependencies = [
     "webcolors>=25.10.0,<26.0.0",
 ]
 
+[[tool.mypy.overrides]]
+module = "webcolors.*"
+ignore_missing_imports = true
+
 [dependency-groups]
 dev = [
     "flake8>=7.3.0",
