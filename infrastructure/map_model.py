@@ -46,11 +46,13 @@ class Meta(BaseModel):
     def validate_color(cls, v: str | None) -> str | None:
         if v is None:
             return v
-        v = v.strip()
+        v = v.strip().lower()
         if not v:
             return None
         if any(ch.isspace() for ch in v):
             raise ValueError(f"color must be a single word, got: {v!r}")
+        if v == "rainbow":
+            return "rainbow"
         try:
             webcolors.name_to_hex(v, spec="css3")
         except ValueError:
@@ -70,7 +72,7 @@ class Hub(BaseModel):
     name: str
     x: int
     y: int
-    meta: Meta = Field(default_factory=Meta)
+    meta: Optional[Meta] = Field(default_factory=Meta)
 
     @field_validator("name")
     @classmethod
@@ -98,7 +100,7 @@ class Con(BaseModel):
 
 
 class MapModel(BaseModel):
-    drone_number: int
+    nb_drones: int
     start_hub: Hub
     hubs: list[Hub] = Field(default_factory=list)
     end_hub: Hub
