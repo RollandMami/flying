@@ -5,7 +5,6 @@ try:
     from pydantic import (
         BaseModel,
         Field,
-        ValidationError,
         model_validator,
         field_validator
     )
@@ -50,7 +49,7 @@ class Meta(BaseModel):
         if not v:
             return None
         if any(ch.isspace() for ch in v):
-            raise ValidationError(f"color must be a single word, got: '{v}'")
+            raise ValueError(f"color must be a single word, got: '{v}'")
         return v.lower()
 
     @property
@@ -73,9 +72,9 @@ class Hub(BaseModel):
     def validate_name(cls, v: str) -> str:
         v = v.strip()
         if not v:
-            raise ValidationError("Hub name must not be empty")
+            raise ValueError("Hub name must not be empty")
         if "-" in v:
-            raise ValidationError(f"Hub name must not contain '-': '{v}'")
+            raise ValueError(f"Hub name must not contain '-': '{v}'")
         return v
 
 
@@ -89,7 +88,7 @@ class Con(BaseModel):
         if self.left == self.right:
             msg1 = "Self-loop connection not allowed: "
             msg2 = f"'{self.left}-{self.right}'"
-            raise ValidationError(msg1 + msg2)
+            raise ValueError(msg1 + msg2)
         return self
 
 
