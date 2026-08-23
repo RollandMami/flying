@@ -1,14 +1,15 @@
-from infrastructure import MapModel, TxtParser
+# from infrastructure import MapModel, TxtParser
+from interface import Window, settings
+import pygame
 
 
 def main() -> None:
-    data = TxtParser().load("maps/challenger/01_the_impossible_dream.txt")
-    print(data)
-    model = MapModel(**data)
-    print("+"*25, "\n")
-    d = model.model_dump()
-    for k, v in d.items():
-        print(k, ": ", v, "\n")
+    # path = "maps/challenger/01_the_impossible_dream.txt"
+    bg = pygame.Color(settings.COLOR_BG_MAIN)
+    width = settings.WIDTH
+    height = settings.HEIGHT
+    win = Window(bg, "Test sur le main", width, height)
+    win.run()
     print("\n\nHello from flyin!")
 
 

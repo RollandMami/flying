@@ -72,7 +72,7 @@ class Hub(BaseModel):
     name: str
     x: int
     y: int
-    meta: Optional[Meta] = Field(default_factory=Meta)
+    meta: Meta = Field(default_factory=Meta)
 
     @field_validator("name")
     @classmethod

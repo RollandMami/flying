@@ -29,7 +29,7 @@ lint: install
 
 lint-strict: install
 	@uv run flake8 . --exclude=.venv
-	@uv run mypy . --strict --exclude="^\.venv"
+	@uv run mypy . $(FLAGS) --strict --exclude="^\.venv"
 
 push:
 	@if [ -z "$(m)" ]; then \
