@@ -1,3 +1,3 @@
-from .gui import Window, settings
+from .gui import settings, SceneManager
 
-__all__ = ["Window", "settings"]
+__all__ = ["SceneManager", "settings"]

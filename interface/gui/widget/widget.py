@@ -68,3 +68,73 @@ class Button(BaseWidget):
                     self._pressed = False
         else:
             self._top_color = self.bg
+
+
+class ProgressBar(BaseWidget):
+
+    def __init__(
+        self,
+        bg: pygame.Color,
+        font: pygame.font.Font,
+        fg: pygame.Color,
+        master: pygame.Surface,
+        position: tuple[int, int],
+        height: int=25,
+        width: int=1200,
+        duration: float = 2.0,
+    ) -> None:
+        self._master = master
+        self.bg = bg
+        self.font = font
+        self.fg = fg
+        self._duration = duration
+        self._elapsed = 0.0
+
+        self._out_rect = pygame.Rect(position, (width, height))
+        x, y = position[0] + 2, position[1] + 2
+        self._inner_max_width = width - 4
+        self._inner_rect = pygame.Rect((x, y), (0, height - 4))
+        self.text1 = self.font.render("Loading ...", True, self.fg)
+        self.text1_rec = self.text1.get_rect(center=self._inner_rect.center)
+        self.text2 = self.font.render("0.0 %", True, self.fg)
+        self.text2_rec = self.text1.get_rect(center=self._inner_rect.center)
+
+    @property
+    def is_finished(self) -> bool:
+        return self._elapsed >= self._duration
+
+    def update(self, dt: float) -> None:
+        if self.is_finished:
+            return
+        self._elapsed = min(self._duration, self._elapsed + dt)
+        progress = self._elapsed / self._duration
+        self.text2 = self.font.render(f"{progress * 100:.1f} %", True, self.fg)
+        self._inner_rect.width = int(self._inner_max_width * progress)
+
+    def draw(self) -> None:
+        self.text1_rec.left = self._inner_rect.left + 7
+        self.text2_rec.right = self._out_rect.right + 7
+        pygame.draw.rect(self._master, self.bg, self._out_rect)
+        pygame.draw.rect(self._master, "green", self._inner_rect)
+        self._master.blit(self.text1, self.text1_rec)
+        self._master.blit(self.text2, self.text2_rec)
+
+    def event_handler(self) -> None:
+        pass
+
+
+class Grid(BaseWidget):
+
+    def __init__(self) -> None:
+        ...
+
+    def draw(self) -> None:
+        ...
+
+
+    def update(self) -> None:
+        ...
+
+
+    def event_handler(self) -> None:
+        ...

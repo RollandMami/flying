@@ -1,3 +1,3 @@
-from .widget import Button
+from .widget import Button, ProgressBar
 
-__all__ = ["Button"]
+__all__ = ["Button", "ProgressBar"]

@@ -11,7 +11,7 @@ install:
 	@uv sync -q
 
 run: install
-	@uv run python $(MAIN)
+	@PYGAME_HIDE_SUPPORT_PROMPT=1 uv run python3 $(MAIN)
 
 debug: install
 	@uv run python -m pdb $(MAIN)

@@ -1,5 +1,5 @@
-from .main_frame import Window
+from .main_frame import SceneManager
 from . import settings
 
 
-__all__ = ["Window", "settings"]
+__all__ = ["SceneManager", "settings"]
