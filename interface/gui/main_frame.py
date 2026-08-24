@@ -1,11 +1,13 @@
 import sys
 import pygame
-from .pages.base_scene import BaseScene
-# from .pages.game_scene import GameScene
-# from .pages.help_scene import HelpScene
-# from .pages.home_scene import HomeScene
-# from .pages.settings_scene import SettingsScene
-from .pages.splash import SplashScene
+from . import settings
+from .pages import (
+    BaseScene,
+    GameScene,
+    HelpScene,
+    HomeScene,
+    SettingsScene,
+    SplashScene)
 
 
 class SceneManager:
@@ -18,14 +20,28 @@ class SceneManager:
         self.is_running = True
         self.w = w
         self.h = h
+        self.bg = settings.COLOR_BG_MAIN
+        txt_mute = settings.COLOR_TEXT_MUTED
         self.title = title
 
         self.scenes: dict[str, BaseScene] = {
-            "SPLASH": SplashScene(master=self.screen, bg="red"),
-            # "HOME": HomeScene(self),
-            # "SETTINGS": SettingsScene(self),
-            # "GAME": GameScene(self),
-            # "HELP": HelpScene(self),
+            "SPLASH": SplashScene(
+                self.screen, self.bg, txt_mute,
+                self.switch_to),
+            "HOME": HomeScene(
+                self.screen, self.bg, txt_mute,
+                self.switch_to),
+            "SETTINGS": SettingsScene(
+                self.screen, self.bg, txt_mute,
+                self.switch_to),
+            "GAME": GameScene(
+                self.screen, self.bg, txt_mute,
+                self.switch_to
+                ),
+            "HELP": HelpScene(
+                self.screen, self.bg, txt_mute,
+                self.switch_to
+                ),
         }
 
         self.current_scene: BaseScene = self.scenes["SPLASH"]

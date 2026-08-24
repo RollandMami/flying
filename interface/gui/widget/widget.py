@@ -51,7 +51,7 @@ class Button(BaseWidget):
             self._top_rect, border_radius=12)
         self._master.blit(self._text, self._text_rec)
 
-    def update(self) -> None:
+    def update(self, dt: float) -> None:
         pass
 
     def event_handler(self) -> None:
@@ -79,8 +79,8 @@ class ProgressBar(BaseWidget):
         fg: pygame.Color,
         master: pygame.Surface,
         position: tuple[int, int],
-        height: int=25,
-        width: int=1200,
+        height: int = 25,
+        width: int | None = None,
         duration: float = 2.0,
     ) -> None:
         self._master = master
@@ -89,7 +89,8 @@ class ProgressBar(BaseWidget):
         self.fg = fg
         self._duration = duration
         self._elapsed = 0.0
-
+        if not width:
+            width = self._master.get_width() - 20
         self._out_rect = pygame.Rect(position, (width, height))
         x, y = position[0] + 2, position[1] + 2
         self._inner_max_width = width - 4
@@ -115,9 +116,65 @@ class ProgressBar(BaseWidget):
         self.text1_rec.left = self._inner_rect.left + 7
         self.text2_rec.right = self._out_rect.right + 7
         pygame.draw.rect(self._master, self.bg, self._out_rect)
-        pygame.draw.rect(self._master, "green", self._inner_rect)
+        pygame.draw.rect(self._master, "blue", self._inner_rect)
         self._master.blit(self.text1, self.text1_rec)
         self._master.blit(self.text2, self.text2_rec)
+
+    def event_handler(self) -> None:
+        pass
+
+
+class AnimatedText(BaseWidget):
+
+    def __init__(self,
+                 master: pygame.Surface,
+                 font: pygame.font.Font,
+                 texte: str,
+                 color: pygame.Color,
+                 delay: float = 0.05) -> None:
+        super().__init__()
+        self.master = master
+        self.font = font
+        self.str = texte
+        self.fg = color
+
+        self._char_delay = delay
+        self._elapsed = 0.0
+        self._index = 0
+
+        self.text = self.font.render("", True, self.fg)
+        self.text_rect = self.text.get_rect(
+            center=self.master.get_rect().center
+        )
+
+    def draw(self) -> None:
+        self.text_rect.center = self.master.get_rect().center
+        self.master.blit(self.text, self.text_rect)
+
+    @property
+    def is_finished(self) -> bool:
+        return self._index >= len(self.str)
+
+    def update(self, dt: float) -> None:
+        if self.is_finished:
+            return
+
+        self._elapsed += dt
+        while (
+            self._elapsed >= self._char_delay and
+            self._index < len(self.str)
+        ):
+            self._elapsed -= self._char_delay
+            self._index += 1
+            current_text = self.str[:self._index]
+            self.text = self.font.render(
+                current_text,
+                True,
+                self.fg
+            )
+            self.text_rect = self.text.get_rect(
+                center=self.master.get_rect().center
+            )
 
     def event_handler(self) -> None:
         pass
@@ -131,10 +188,8 @@ class Grid(BaseWidget):
     def draw(self) -> None:
         ...
 
-
-    def update(self) -> None:
+    def update(self, dt: float) -> None:
         ...
-
 
     def event_handler(self) -> None:
         ...
