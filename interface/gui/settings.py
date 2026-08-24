@@ -13,6 +13,9 @@ def rainbow() -> list[tuple[int, int, int]]:
     ]
 
 
+#                      DIMENSION DES SPRITES C'EST 120 (H) X 80 (V) SCAN + IDLE
+#                           DIMENSION DES SPRITES C'EST 120 (H) X 100 (V) DEATH
+#                           DIMENSION DES SPRITES C'EST 120 (H) X 100 (V) DEATH
 # color theme:
 # Arrière-plans
 COLOR_BG_MAIN = "#0F172A"       # Fond de fenêtre
