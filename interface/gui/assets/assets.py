@@ -19,9 +19,12 @@ class Icon:
 
     _cache: dict[str, pygame.Surface] = {}
 
-    def __init__(self, path: str, size: tuple[int, int] | None = None) -> None:
+    def __init__(self, path: str, size: int | tuple[int, int] | None = None
+                 ) -> None:
         self.path = path
         self._original = self._load(path)
+        if isinstance(size, int):
+            size = (size, size)
         self.surface = (
             pygame.transform.smoothscale(self._original, size)
             if size else self._original
@@ -33,7 +36,9 @@ class Icon:
             cls._cache[path] = pygame.image.load(path).convert_alpha()
         return cls._cache[path]
 
-    def resized(self, size: tuple[int, int]) -> "Icon":
+    def resized(self, size: int | tuple[int, int]) -> "Icon":
+        if isinstance(size, int):
+            size = (size, size)
         new_icon = Icon.__new__(Icon)
         new_icon.path = self.path
         new_icon._original = self._original
@@ -66,7 +71,6 @@ DRN_IDLE = partial(load_spritesheet, "drone_IDLE.png", 120, 80)
 DRN_SCAN = partial(load_spritesheet, "drone_scan.png", 120, 80)
 
 BOPS_FONT = partial(Font, os.path.join(bpath, "BlackOpsOne-Regular.ttf"))
-SPIC_FONT = partial(Font, os.path.join(bpath, "BungeeSpice-Regular.ttf"))
 DIRT_FONT = partial(Font, os.path.join(bpath, "RubikDirt-Regular.ttf"))
 FAST_FONT = partial(Font, os.path.join(bpath, "FasterOne-Regular.ttf"))
 

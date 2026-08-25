@@ -62,7 +62,8 @@ class HomeScene(BaseScene):
                             "red",
                             self.master,
                             (ipx, ipy + e * 4),
-                            lambda: pygame.quit()
+                            lambda: pygame.quit(),
+                            assets.CLOSE_ICON(10)
                             )
         self.titre = AnimatedText(
                     self.master,
