@@ -22,6 +22,7 @@ class HomeScene(BaseScene):
         bw, bh = 260, 45
         ipx, ipy = cx - (bw // 2), cy - (bh // 2)
         e = bh + 20
+        wi = 30
         self.btn_start = Button("START",
                                 bw,
                                 bh,
@@ -30,7 +31,8 @@ class HomeScene(BaseScene):
                                 self.fg,
                                 self.master,
                                 (ipx, ipy + e),
-                                lambda: on_finished("GAME")
+                                lambda: on_finished("GAME"),
+                                icon=assets.BACK_ICON(wi)
                                 )
         self.btn_option = Button("OPTIONS",
                                  bw,
@@ -40,7 +42,8 @@ class HomeScene(BaseScene):
                                  self.fg,
                                  self.master,
                                  (ipx, ipy + e * 2),
-                                 lambda: on_finished("SETTINGS")
+                                 lambda: on_finished("SETTINGS"),
+                                 icon=assets.SETTING_ICON(wi)
                                  )
         self.btn_help = Button(
                             "HELP",
@@ -51,7 +54,8 @@ class HomeScene(BaseScene):
                             self.fg,
                             self.master,
                             (ipx, ipy + e * 3),
-                            lambda: on_finished("HELP")
+                            lambda: on_finished("HELP"),
+                            icon = assets.HELP_ICON(wi)
                             )
         self.btn_exit = Button(
                             "QUIT",
@@ -63,7 +67,7 @@ class HomeScene(BaseScene):
                             self.master,
                             (ipx, ipy + e * 4),
                             lambda: pygame.quit(),
-                            assets.CLOSE_ICON(10)
+                            icon=assets.LOUT_ICON(wi)
                             )
         self.titre = AnimatedText(
                     self.master,

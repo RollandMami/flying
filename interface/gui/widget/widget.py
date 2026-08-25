@@ -18,7 +18,7 @@ class Button(BaseWidget):
                  position: tuple[int, int],
                  call: Callable[..., Any],
                  icon: Optional[Icon] = None,
-                 icon_gap: int = 10,
+                 icon_gap: int = 5,
                  elevation: int = 6,) -> None:
         super().__init__(font, bg_color, font_color, master)
         self.pressed = False
@@ -40,14 +40,15 @@ class Button(BaseWidget):
 
         if self.icon:
             gap = icon_gap
-            total_w = self.icon.get_rect() + gap + self.text.get_width()
+            total_w = self.icon.get_width() + gap + self.text.get_width()
             start_x = self.top_rect.centerx - total_w // 2
 
-            self.icon_rec = self.icon.get_rect(
-                midleft=(start_x, self.top_rect.centery)
-            )
             self.text_rec = self.text.get_rect(
-                midleft=(self.icon_rec.right + gap, self.top_rect.centery))
+                midleft=(start_x, self.top_rect.centery))
+
+            self.icon_rec = self.icon.get_rect(
+                midleft=(self.text_rec.right + gap, self.top_rect.centery)
+            )
         else:
             self.icon = None
             self.text_rec = self.text.get_rect(center=self.top_rect.center)
@@ -73,9 +74,9 @@ class Button(BaseWidget):
             self.master,
             self.top_color,
             self.top_rect, border_radius=12)
+        self.master.blit(self.text, self.text_rec)
         if self.icon:
             self.master.blit(self.icon, self.icon_rec)
-        self.master.blit(self.text, self.text_rec)
 
     def update(self, dt: float) -> None:
         pass

@@ -80,3 +80,5 @@ HOME_ICON = partial(Icon, os.path.join(bpath, "home.png"))
 LOUT_ICON = partial(Icon, os.path.join(bpath, "logout.png"))
 MENU_ICON = partial(Icon, os.path.join(bpath, "menu.png"))
 SETTING_ICON = partial(Icon, os.path.join(bpath, "settings.png"))
+HELP_ICON = partial(Icon, os.path.join(bpath, "help-50.png"))
+

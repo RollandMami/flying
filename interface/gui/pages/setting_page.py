@@ -18,8 +18,8 @@ class SettingsScene(BaseScene):
         self.font = assets.BOPS_FONT(15)
         self.font_title = assets.DIRT_FONT(80)
         cx, cy = self.master.get_rect().center
-        bw, bh = 60, 50
-        self.btn_start = Button("H",
+        bw, bh = 45, 40
+        self.btn_start = Button("",
                                 bw,
                                 bh,
                                 self.font,
@@ -27,7 +27,9 @@ class SettingsScene(BaseScene):
                                 self.fg,
                                 self.master,
                                 (20, 20),
-                                lambda: on_finished("HOME")
+                                lambda: on_finished("HOME"),
+                                icon_gap=0,
+                                icon=assets.HOME_ICON(30)
                                 )
         self.titre = AnimatedText(
                     self.master,
