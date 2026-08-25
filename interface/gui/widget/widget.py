@@ -16,7 +16,8 @@ class Button(BaseWidget):
                  master: pygame.Surface,
                  position: tuple[int, int],
                  call: Callable[..., Any],
-                 elevation: int = 6) -> None:
+                 elevation: int = 6,
+                 icon) -> None:
         super().__init__(font, bg_color, font_color, master)
         self._pressed = False
         self.master = master

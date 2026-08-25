@@ -24,5 +24,5 @@ class BaseScene(ABC):
         pass
 
     @abstractmethod
-    def render(self, surface: pygame.Surface) -> None:
+    def render(self, target: pygame.Surface) -> None:
         pass

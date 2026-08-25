@@ -1,7 +1,7 @@
 import pygame
 from ..widget import Button, AnimatedText
 from .base_scene import BaseScene
-from typing import Callable
+from typing import Callable, Any
 from .. import settings
 
 
@@ -10,7 +10,7 @@ class HomeScene(BaseScene):
                  master: pygame.Surface,
                  bg: pygame.Color,
                  fg: pygame.Color,
-                 on_finished: Callable) -> None:
+                 on_finished: Callable[..., Any]) -> None:
         super().__init__(master, bg, fg, on_finished)
         self.width, self.height = master.get_width(), master.get_height()
         self.btn_bg = settings.COLOR_BTN_DEFAULT
@@ -28,7 +28,7 @@ class HomeScene(BaseScene):
                                 self.fg,
                                 self.master,
                                 (ipx, ipy + e),
-                                lambda: print("starting game")
+                                lambda: on_finished("GAME")
                                 )
         self.btn_option = Button("OPTIONS",
                                  bw,
@@ -38,7 +38,7 @@ class HomeScene(BaseScene):
                                  self.fg,
                                  self.master,
                                  (ipx, ipy + e * 2),
-                                 lambda: print("options ...")
+                                 lambda: on_finished("SETTINGS")
                                  )
         self.btn_help = Button(
                             "HELP",
@@ -49,7 +49,7 @@ class HomeScene(BaseScene):
                             self.fg,
                             self.master,
                             (ipx, ipy + e * 3),
-                            lambda: print("help")
+                            lambda: on_finished("HELP")
                             )
         self.btn_exit = Button(
                             "QUIT",
