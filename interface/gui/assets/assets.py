@@ -1,4 +1,8 @@
 import pygame
+from functools import partial
+import os
+
+bpath = "/".join(os.path.abspath(__file__).split("/")[:-1])
 
 
 class Font:
@@ -43,21 +47,32 @@ class Icon:
         target.blit(self.surface, pos)
 
 
-def load_spritesheet(path: str,
+_SPRITESHEETS: dict[str: list[pygame.Surface]] = {}
+
+
+def load_spritesheet(name: str,
                      t_width: int,
                      t_height: int,
                      ) -> list[pygame.Surface]:
-    spritesheet = pygame.image.load(path).convert_alpha()
-    sheet_width, _ = spritesheet.get_size()
-    tiles: list[pygame.Surface] = []
-
-    for col in range(0, sheet_width, t_width):
-        s = pygame.Rect((col, 0), (t_width, t_height))
-        tiles.append(spritesheet.subsurface(s))
-    return tiles
+    if name not in _SPRITESHEETS:
+        path = os.path.join(bpath, name)
+        _SPRITESHEETS[name] = load_spritesheet(path, t_width, t_height)
+    return _SPRITESHEETS[name]
 
 
-DRONE_DEATH = load_spritesheet("./drone_death.png", 120, 100)
-DRONE_WALK = load_spritesheet("./drone_WALK.png", 120, 100)
-DRONE_IDLE = load_spritesheet("./drone_IDLE.png", 120, 80)
-DRONE_SCAN = load_spritesheet("./drone_scan.png", 120, 80)
+DRN_DEATH = partial(load_spritesheet, "drone_death.png", 120, 100)
+DRN_WALK = partial(load_spritesheet, "drone_WALK.png", 120, 100)
+DRN_IDLE = partial(load_spritesheet, "drone_IDLE.png", 120, 80)
+DRN_SCAN = partial(load_spritesheet, "drone_scan.png", 120, 80)
+
+BOPS_FONT = partial(Font, os.path.join(bpath, "BlackOpsOne-Regular.ttf"))
+SPIC_FONT = partial(Font, os.path.join(bpath, "BungeeSpice-Regular.ttf"))
+DIRT_FONT = partial(Font, os.path.join(bpath, "RubikDirt-Regular.ttf"))
+FAST_FONT = partial(Font, os.path.join(bpath, "FasterOne-Regular.ttf"))
+
+BACK_ICON = partial(Icon, os.path.join(bpath, "arrow_back.png"))
+CLOSE_ICON = partial(Icon, os.path.join(bpath, "close.png"))
+HOME_ICON = partial(Icon, os.path.join(bpath, "home.png"))
+LOUT_ICON = partial(Icon, os.path.join(bpath, "logout.png"))
+MENU_ICON = partial(Icon, os.path.join(bpath, "menu.png"))
+SETTING_ICON = partial(Icon, os.path.join(bpath, "settings.png"))

@@ -3,6 +3,7 @@ from ..widget import Button, AnimatedText
 from .. import settings
 from typing import Callable, Any
 from .base_scene import BaseScene
+from ..assets import assets
 
 
 class SettingsScene(BaseScene):
@@ -14,8 +15,8 @@ class SettingsScene(BaseScene):
                  on_finished: Callable[..., Any]):
         super().__init__(master, bg, fg, on_finished)
         self.btn_bg = settings.COLOR_BTN_DEFAULT
-        self.font = pygame.font.SysFont("dejavusans", 15)
-        self.font_title = pygame.font.SysFont("dejavusans", 80)
+        self.font = assets.BOPS_FONT(15)
+        self.font_title = assets.DIRT_FONT(80)
         cx, cy = self.master.get_rect().center
         bw, bh = 60, 50
         self.btn_start = Button("H",

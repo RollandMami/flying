@@ -1,8 +1,8 @@
 import webcolors
 
 
-WIDTH = 1280
-HEIGHT = 720
+WIDTH = 980
+HEIGHT = 620
 MAPDIR = "../maps"
 
 

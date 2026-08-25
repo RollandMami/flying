@@ -3,6 +3,7 @@ from ..widget import ProgressBar, AnimatedText
 from .. import settings
 from .base_scene import BaseScene
 from typing import Callable
+from ..assets import assets
 
 
 class SplashScene(BaseScene):
@@ -14,8 +15,8 @@ class SplashScene(BaseScene):
                  on_finished: Callable) -> None:
         super().__init__(master, bg, fg, on_finished)
         self.width, self.height = master.get_width(), master.get_height()
-        self.font = pygame.font.SysFont("impact", 26)
-        self.font_title = pygame.font.SysFont("dejavusans", 80)
+        self.font = assets.BOPS_FONT(20)
+        self.font_title = assets.DIRT_FONT(80)
         self.prog = ProgressBar(settings.COLOR_BTN_DEFAULT,
                                 self.font,
                                 settings.COLOR_TEXT_PRIMARY,

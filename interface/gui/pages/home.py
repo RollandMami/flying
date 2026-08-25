@@ -3,6 +3,7 @@ from ..widget import Button, AnimatedText
 from .base_scene import BaseScene
 from typing import Callable, Any
 from .. import settings
+from ..assets import assets
 
 
 class HomeScene(BaseScene):
@@ -14,8 +15,9 @@ class HomeScene(BaseScene):
         super().__init__(master, bg, fg, on_finished)
         self.width, self.height = master.get_width(), master.get_height()
         self.btn_bg = settings.COLOR_BTN_DEFAULT
-        self.font = pygame.font.SysFont("dejavusans", 38)
-        self.font_title = pygame.font.SysFont("dejavusans", 80)
+        self.font = assets.BOPS_FONT(38)
+        self.rf = assets.FAST_FONT(38)
+        self.font_title = assets.DIRT_FONT(80)
         cx, cy = self.master.get_rect().center
         bw, bh = 260, 45
         ipx, ipy = cx - (bw // 2), cy - (bh // 2)
@@ -55,9 +57,9 @@ class HomeScene(BaseScene):
                             "QUIT",
                             bw,
                             bh,
-                            self.font,
+                            self.rf,
                             self.btn_bg,
-                            self.fg,
+                            "red",
                             self.master,
                             (ipx, ipy + e * 4),
                             lambda: pygame.quit()

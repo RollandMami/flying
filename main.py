@@ -1,13 +1,13 @@
 # from infrastructure import MapModel, TxtParser
 from interface import SceneManager, settings
-import pygame
+#import pygame
 
 
 def main() -> None:
     # path = "maps/challenger/01_the_impossible_dream.txt"
     width = settings.WIDTH
     height = settings.HEIGHT
-    win = SceneManager(width, height, "Test sur le main")
+    win = SceneManager(width, height, "F L Y - I N G")
     win.run()
     print("\n\nHello from flyin!")
 

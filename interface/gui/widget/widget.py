@@ -1,7 +1,8 @@
 from .base_widget import BaseWidget
 import pygame
-from typing import Callable, Any
+from typing import Callable, Any, Optional
 from .. import settings
+from ..assets import Icon
 
 
 class Button(BaseWidget):
@@ -17,7 +18,7 @@ class Button(BaseWidget):
                  position: tuple[int, int],
                  call: Callable[..., Any],
                  elevation: int = 6,
-                 icon) -> None:
+                 icon: Optional[Icon] = None) -> None:
         super().__init__(font, bg_color, font_color, master)
         self._pressed = False
         self.master = master
