@@ -1,6 +1,7 @@
 from .base_widget import BaseWidget
 import pygame
 from typing import Callable, Any
+from .. import settings
 
 
 class Button(BaseWidget):
@@ -16,22 +17,22 @@ class Button(BaseWidget):
                  position: tuple[int, int],
                  call: Callable[..., Any],
                  elevation: int = 6) -> None:
-        super().__init__()
+        super().__init__(font, bg_color, font_color, master)
         self._pressed = False
-        self._master = master
+        self.master = master
+        self.hover_color = settings.COLOR_BTN_HOVER
         self._callable = call
         self._elevation = elevation
         self._dynamic_elv = elevation
         self._oroginal_y = position[1]
 
         self._top_rect = pygame.Rect(position, (width, height))
-        self.bg = bg_color
         self._top_color = self.bg
 
         self._bottom_rec = pygame.Rect(position, (width, elevation))
-        self._bottom_col = "grey"
+        self._bottom_col = settings.COLOR_BTN_ACCENT
 
-        self._text = font.render(text, True, font_color)
+        self._text = font.render(text, True, self.fg)
         self._text_rec = self._text.get_rect(center=self._top_rect.center)
 
     def draw(self) -> None:
@@ -42,14 +43,14 @@ class Button(BaseWidget):
         self._bottom_rec.midtop = self._top_rect.midtop
         self._bottom_rec.height = self._top_rect.height + self._dynamic_elv
         pygame.draw.rect(
-            self._master,
+            self.master,
             self._bottom_col,
             self._bottom_rec, border_radius=12)
         pygame.draw.rect(
-            self._master,
+            self.master,
             self._top_color,
             self._top_rect, border_radius=12)
-        self._master.blit(self._text, self._text_rec)
+        self.master.blit(self._text, self._text_rec)
 
     def update(self, dt: float) -> None:
         pass
@@ -57,7 +58,7 @@ class Button(BaseWidget):
     def event_handler(self) -> None:
         mouse_pos = pygame.mouse.get_pos()
         if self._top_rect.collidepoint(mouse_pos):
-            self._top_color = "red"
+            self._top_color = self.hover_color
             if pygame.mouse.get_pressed()[0]:
                 self._dynamic_elv = 0
                 self._pressed = True
@@ -83,14 +84,11 @@ class ProgressBar(BaseWidget):
         width: int | None = None,
         duration: float = 2.0,
     ) -> None:
-        self._master = master
-        self.bg = bg
-        self.font = font
-        self.fg = fg
+        super().__init__(font, bg, fg, master)
         self._duration = duration
         self._elapsed = 0.0
         if not width:
-            width = self._master.get_width() - 20
+            width = self.master.get_width() - 20
         self._out_rect = pygame.Rect(position, (width, height))
         x, y = position[0] + 2, position[1] + 2
         self._inner_max_width = width - 4
@@ -115,10 +113,10 @@ class ProgressBar(BaseWidget):
     def draw(self) -> None:
         self.text1_rec.left = self._inner_rect.left + 7
         self.text2_rec.right = self._out_rect.right + 7
-        pygame.draw.rect(self._master, self.bg, self._out_rect)
-        pygame.draw.rect(self._master, "blue", self._inner_rect)
-        self._master.blit(self.text1, self.text1_rec)
-        self._master.blit(self.text2, self.text2_rec)
+        pygame.draw.rect(self.master, self.bg, self._out_rect)
+        pygame.draw.rect(self.master, "blue", self._inner_rect)
+        self.master.blit(self.text1, self.text1_rec)
+        self.master.blit(self.text2, self.text2_rec)
 
     def event_handler(self) -> None:
         pass
@@ -131,24 +129,26 @@ class AnimatedText(BaseWidget):
                  font: pygame.font.Font,
                  texte: str,
                  color: pygame.Color,
+                 dx: int = 0,
+                 dy: int = 0,
                  delay: float = 0.05) -> None:
-        super().__init__()
-        self.master = master
-        self.font = font
+        super().__init__(font, "grey", color, master)
         self.str = texte
-        self.fg = color
 
         self._char_delay = delay
         self._elapsed = 0.0
         self._index = 0
+        self.dx, self.dy = dx, dy
 
         self.text = self.font.render("", True, self.fg)
+        cx, cy = self.master.get_rect().center
         self.text_rect = self.text.get_rect(
-            center=self.master.get_rect().center
+            center=(cx + self.dx, cy + self.dy)
         )
 
     def draw(self) -> None:
-        self.text_rect.center = self.master.get_rect().center
+        cx, cy = self.master.get_rect().center
+        self.text_rect.center = (cx + self.dx, cy + self.dy)
         self.master.blit(self.text, self.text_rect)
 
     @property
@@ -172,8 +172,9 @@ class AnimatedText(BaseWidget):
                 True,
                 self.fg
             )
+            cx, cy = self.master.get_rect().center
             self.text_rect = self.text.get_rect(
-                center=self.master.get_rect().center
+                center=(cx + self.dx, cy + self.dy)
             )
 
     def event_handler(self) -> None:

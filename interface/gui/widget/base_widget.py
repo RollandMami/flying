@@ -1,22 +1,19 @@
 from abc import ABC, abstractmethod
 import pygame
-from typing import Callable
 
 
 class BaseWidget(ABC):
 
     def __init__(self,
-                text: str,
-                width: int,
-                height: int,
-                font: pygame.font.Font,
-                bg_color: str,
-                font_color: str,
-                master: pygame.Surface,
-                position: tuple[int, int],
-                call: Callable[..., Any],
-                elevation: int = 6) -> None:
-        ...
+                 font: pygame.font.Font,
+                 bg_color: pygame.Color,
+                 font_color: pygame.Color,
+                 master: pygame.Surface,
+                 ) -> None:
+        self.master = master
+        self.bg = bg_color
+        self.font = font
+        self.fg = font_color
 
     @abstractmethod
     def draw(self) -> None:
