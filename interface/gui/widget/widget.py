@@ -267,3 +267,37 @@ class Grid(BaseWidget):
 
     def event_handler(self) -> None:
         pass
+
+
+class RadioButton(Button):
+
+    def __init__(self,
+                 text: str,
+                 width: int,
+                 height: int,
+                 font: pygame.font.Font,
+                 bg_color: pygame.Color,
+                 font_color: pygame.Color,
+                 master: pygame.Surface,
+                 position: tuple[int, int],
+                 call: Callable[..., Any],
+                 value: str,
+                 icon: Optional[Icon] = None,
+                 icon_gap: int = 5,
+                 elevation: int = 6,
+                 ) -> None:
+        super().__init__(text, width, height, font,
+                         bg_color, font_color, master,
+                         position, call, icon, icon_gap,
+                         elevation)
+        self.value = value
+        self.is_selected = False
+
+    def draw(self) -> None:
+        super().draw()
+
+    def update(self) -> None:
+        super().update()
+
+    def event_handler(self) -> None:
+        super().event_handler()

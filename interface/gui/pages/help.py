@@ -17,7 +17,7 @@ class HelpScene(BaseScene):
         self.btn_bg = settings.COLOR_BTN_DEFAULT
         self.font = assets.BOPS_FONT(15)
         self.font_title = assets.DIRT_FONT(80)
-        cx, _ = self.master.get_rect().center
+        cx, cy = self.master.get_rect().center
         mx = self.master.get_rect().right
         bw, bh = 45, 40
         self.btn_home = Button("",
@@ -50,7 +50,7 @@ class HelpScene(BaseScene):
                     self.font_title,
                     "H E L P",
                     self.fg,
-                    0, 0
+                    0, 50 - cy
         )
 
     def event_handler(self, event: pygame.event.Event) -> None:
