@@ -291,6 +291,7 @@ class RadioButton(Button):
                          bg_color, font_color, master,
                          position, call, icon, icon_gap,
                          elevation)
+        self.bottom_col = settings.COLOR_BORDER
         self.value = value
         self.is_selected = False
         self.check_icon = check_icon.surface if check_icon else None
@@ -300,8 +301,10 @@ class RadioButton(Button):
         super().update(dt)
         if self.is_selected:
             self.icon = self.check_icon
+            self.bottom_col = settings.COLOR_BTN_ACCENT
         else:
             self.icon = self.default_icon
+            self.bottom_col = settings.COLOR_BORDER
 
 
 class RadioGroup:
@@ -345,3 +348,37 @@ class RadioGroup:
     @property
     def active_button(self) -> Optional[RadioButton]:
         return self._active
+
+
+class Label(BaseWidget):
+    def __init__(self,
+                 text: str,
+                 font: pygame.font.Font,
+                 bg_color: pygame.Color,
+                 font_color: pygame.Color,
+                 master: pygame.Surface,
+                 position: tuple[int, int]) -> None:
+        super().__init__(font, bg_color, font_color, master)
+        self.label = text
+        self.position = position
+
+        self.text = self.font.render(self.label, True, self.fg, self.bg)
+        self.text_rect = self.text.get_rect(bottomleft=self.position)
+
+    def set_pos(self, pos: tuple[int, int]) -> None:
+        self.position = pos
+        self.text_rect.bottomleft = self.position
+
+    def set_text(self, text: str) -> None:
+        self.label = text
+        self.text = self.font.render(self.label, True, self.fg, self.bg)
+        self.text_rect = self.text.get_rect(bottomleft=self.position)
+
+    def event_handler(self) -> None:
+        pass
+
+    def update(self) -> None:
+        pass
+
+    def draw(self) -> None:
+        self.master.blit(self.text, self.text_rect)

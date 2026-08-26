@@ -4,7 +4,8 @@ from .widget import (
     AnimatedText,
     Grid,
     RadioButton,
-    RadioGroup
+    RadioGroup,
+    Label
     )
 
 __all__ = ["Button",
@@ -12,4 +13,5 @@ __all__ = ["Button",
            "AnimatedText",
            "Grid",
            "RadioButton",
-           "RadioGroup"]
+           "RadioGroup",
+           "Label"]
