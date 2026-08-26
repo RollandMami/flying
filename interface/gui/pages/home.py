@@ -32,7 +32,7 @@ class HomeScene(BaseScene):
                                 self.master,
                                 (ipx, ipy + e),
                                 lambda: on_finished("GAME"),
-                                icon=assets.BACK_ICON(wi)
+                                icon=assets.START_ICON(wi+10)
                                 )
         self.btn_option = Button("OPTIONS",
                                  bw,
@@ -55,7 +55,7 @@ class HomeScene(BaseScene):
                             self.master,
                             (ipx, ipy + e * 3),
                             lambda: on_finished("HELP"),
-                            icon = assets.HELP_ICON(wi)
+                            icon=assets.HELP_ICON(wi)
                             )
         self.btn_exit = Button(
                             "QUIT",
@@ -66,7 +66,7 @@ class HomeScene(BaseScene):
                             "red",
                             self.master,
                             (ipx, ipy + e * 4),
-                            lambda: pygame.quit(),
+                            lambda: on_finished("QUIT"),
                             icon=assets.LOUT_ICON(wi)
                             )
         self.titre = AnimatedText(

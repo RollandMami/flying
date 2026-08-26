@@ -48,6 +48,9 @@ class SceneManager:
 
     def switch_to(self, scene_name: str) -> None:
         """Change la scène active."""
+        if scene_name == "QUIT":
+            self.is_running = False
+            return
         if scene_name in self.scenes:
             self.current_scene = self.scenes[scene_name]
 
