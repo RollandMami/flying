@@ -282,7 +282,8 @@ class RadioButton(Button):
                  position: tuple[int, int],
                  call: Callable[..., Any],
                  value: str,
-                 icon: Optional[Icon] = None,
+                 check_icon: Optional[Icon],
+                 icon: Optional[Icon],
                  icon_gap: int = 5,
                  elevation: int = 6,
                  ) -> None:
@@ -292,12 +293,55 @@ class RadioButton(Button):
                          elevation)
         self.value = value
         self.is_selected = False
+        self.check_icon = check_icon.surface if check_icon else None
+        self.default_icon = icon.surface if icon else None
 
-    def draw(self) -> None:
-        super().draw()
+    def update(self, dt: float) -> None:
+        super().update(dt)
+        if self.is_selected:
+            self.icon = self.check_icon
+        else:
+            self.icon = self.default_icon
 
-    def update(self) -> None:
-        super().update()
+
+class RadioGroup:
+
+    def __init__(self) -> None:
+        self.radios: list[RadioButton] = []
+        self._active: Optional[RadioButton] = None
+
+    def add_radio(self, btn: RadioButton) -> None:
+        if btn not in self.radios:
+            self.radios.append(btn)
+            original_call = btn.callable
+
+            def on_click() -> None:
+                self.select(btn)
+                if original_call:
+                    original_call()
+
+            btn.callable = on_click
+        elif any(r.value == btn.value for r in self.radios):
+            raise ValueError("Duplicate object...")
+
+    def select(self, btn: RadioButton) -> None:
+        self._active = btn
+        self.sync_states()
+
+    def sync_states(self) -> None:
+        for rd in self.radios:
+            rd.is_selected = (rd is self._active)
 
     def event_handler(self) -> None:
-        super().event_handler()
+        for rd in self.radios:
+            rd.event_handler()
+
+    @property
+    def value(self):
+        if self._active is not None:
+            return self._active.value
+        return None
+
+    @property
+    def active_button(self) -> Optional[RadioButton]:
+        return self._active

@@ -70,8 +70,8 @@ class Meta(BaseModel):
 
 class Hub(BaseModel):
     name: str
-    x: int
-    y: int
+    x: int = Field(ge=-20, le=20)
+    y: int = Field(ge=-20, le=20)
     meta: Meta = Field(default_factory=Meta)
 
     @field_validator("name")
@@ -100,7 +100,7 @@ class Con(BaseModel):
 
 
 class MapModel(BaseModel):
-    nb_drones: int
+    nb_drones: int = Field(ge=0, le=60)
     start_hub: Hub
     hubs: list[Hub] = Field(default_factory=list)
     end_hub: Hub

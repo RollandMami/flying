@@ -97,10 +97,21 @@ class TxtParser(BaseParser):
                     options[key] = value
         return options
 
-    def _split_head_and_options(self, arg: str) -> tuple[str, str]:
+    def _split_head_and_options(self,
+                                arg: str,
+                                line_num: int,
+                                line_content: str
+                                ) -> tuple[str, str]:
         index = arg.find("[")
         if index == -1:
             return arg.strip(), ""
+        endindex = arg.find("]", index)
+        if endindex == -1:
+            raise ParserError(
+                    line_num,
+                    line_content,
+                    "expected format '<k>:<v> ... [arg1=value arg2=value]'"
+            )
         return arg[:index].strip(), arg[index:].strip()
 
     def parse_hub_line(self,
@@ -186,7 +197,7 @@ class TxtParser(BaseParser):
                             line,
                             "missing ':' separator")
 
-                    label, arg = line.split(":")
+                    label, arg = line.split(":", 1)
                     label, arg = label.strip(), arg.strip()
 
                     if label not in self._keys:
