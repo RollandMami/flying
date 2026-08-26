@@ -5,7 +5,7 @@ import pygame
 class BaseWidget(ABC):
 
     def __init__(self,
-                 font: pygame.font.Font,
+                 font: pygame.font.Font | None,
                  bg_color: pygame.Color,
                  font_color: pygame.Color,
                  master: pygame.Surface,

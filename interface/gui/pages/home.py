@@ -74,7 +74,7 @@ class HomeScene(BaseScene):
                     self.font_title,
                     "H O M E - P A G E",
                     self.fg,
-                    0, -100
+                    0, -90
         )
 
     def event_handler(self, evt: pygame.event.Event) -> None:
