@@ -1,11 +1,6 @@
 import webcolors
 
 
-WIDTH = 980
-HEIGHT = 620
-MAPDIR = "../maps"
-
-
 def rainbow() -> list[tuple[int, int, int]]:
     return [
         webcolors.hls_to_rgb(((index % 7) * (360.0 / 7) / 360.0, 0.5, 1.0))

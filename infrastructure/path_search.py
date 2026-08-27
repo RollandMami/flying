@@ -10,17 +10,16 @@ class PathParser:
         self.list_files = {}
 
     def get_files(self, level: str) -> dict[str, Path]:
-        dirs = self.lvl_dir_dict.get(level, None)
+        dirs = self.lvl_dir_dict.get(level)
         if dirs is not None:
             self.list_files = {
-                file.name: file for file in Path(self.base).iterdir()
+                file.name: file for file in dirs.iterdir()
                 if file.is_file()}
         return self.list_files
 
     def get_map_file(self, level: str, id: int) -> dict[str, Path]:
-        if self.get_files(level) != {}:
-            if any(id in name for name in self.list_files):
-                for n, p in self.list_files.items():
-                    if n.startswith(f"{str(id).zfill(2)}_"):
-                        return {n: p}
+        files = self.get_files(level)
+        for n, p in files.items():
+            if n.startswith(f"{id:02d}_"):
+                return {n: p}
         return {}
