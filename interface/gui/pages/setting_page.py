@@ -9,7 +9,8 @@ from ..widget import (
     AnimatedText,
     RadioButton,
     RadioGroup,
-    Label)
+    Label,
+    Spinbox)
 
 
 class SettingsScene(BaseScene):
@@ -111,6 +112,7 @@ class SettingsScene(BaseScene):
         self.radio_group.add_radio(self.medium)
         self.radio_group.add_radio(self.hard)
         self.radio_group.add_radio(self.challenge)
+        self.spn = Spinbox(self.font2, self.bg, self.fg, self.master, (x_medium, 380))
 
     def event_handler(self, event: pygame.event.Event) -> None:
         self.radio_group.event_handler()
@@ -153,6 +155,7 @@ class SettingsScene(BaseScene):
         self.challenge.draw()
         self.display.draw()
         self.lvl_value.draw()
+        self.spn.draw()
 
     def select_level(self) -> None:
         value = self.radio_group.value

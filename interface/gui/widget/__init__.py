@@ -1,4 +1,4 @@
-from .component import (
+from .components import (
     Button,
     ProgressBar,
     AnimatedText,
@@ -7,6 +7,7 @@ from .component import (
     RadioGroup,
     Label,
     LevelShower,
+	Spinbox,
     )
 
 __all__ = ["Button",
@@ -16,4 +17,5 @@ __all__ = ["Button",
            "RadioButton",
            "RadioGroup",
            "Label",
-           "LevelShower"]
+           "LevelShower",
+		   "Spinbox"]
