@@ -1,8 +1,8 @@
-from .base_widget import BaseWidget
+from .BaseWidget import BaseWidget
 import pygame
 from typing import Callable, Any, Optional
-from .. import settings
-from ..assets import Icon
+from ... import settings
+from ...assets import Icon
 
 
 class Button(BaseWidget):

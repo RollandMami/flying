@@ -105,7 +105,7 @@ class SettingsScene(BaseScene):
             call=lambda: self.select_level(), value="hard")
         self.challenge = self.base_rdo(
             text="BONUS", position=(x_bonus, 240),
-            call=lambda: self.select_level(), value="bonus")
+            call=lambda: self.select_level(), value="challenger")
         self.radio_group = RadioGroup()
         self.radio_group.add_radio(self.easy)
         self.radio_group.add_radio(self.medium)

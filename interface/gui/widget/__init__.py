@@ -1,11 +1,12 @@
-from .widget import (
+from .component import (
     Button,
     ProgressBar,
     AnimatedText,
     Grid,
     RadioButton,
     RadioGroup,
-    Label
+    Label,
+    LevelShower,
     )
 
 __all__ = ["Button",
@@ -14,4 +15,5 @@ __all__ = ["Button",
            "Grid",
            "RadioButton",
            "RadioGroup",
-           "Label"]
+           "Label",
+           "LevelShower"]
