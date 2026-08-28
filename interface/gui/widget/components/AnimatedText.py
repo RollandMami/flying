@@ -12,7 +12,7 @@ class AnimatedText(BaseWidget):
                  dx: int = 0,
                  dy: int = 0,
                  delay: float = 0.05) -> None:
-        super().__init__(font, "grey", color, master)
+        super().__init__(font, pygame.Color("grey"), color, master)
         self.str = texte
 
         self.char_delay = delay

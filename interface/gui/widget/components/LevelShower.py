@@ -12,7 +12,7 @@ class LevelShower(BaseWidget):
                  font_color: pygame.Color,
                  master: pygame.Surface,
                  position: tuple[int, int],
-                 level: Optional[str]):
+                 level: Optional[str]) -> None:
         super().__init__(font, bg_color, font_color, master)
         wi = 70
         self.icons = {
@@ -52,7 +52,7 @@ class LevelShower(BaseWidget):
             (x1, y1 + 30)
         ]
 
-    def draw(self):
+    def draw(self) -> None:
         pygame.draw.rect(self.master, self.bg, self.rect)
         pygame.draw.circle(self.master, self.bg,
                            self.circle_rect.center, 45, 5)
@@ -60,10 +60,10 @@ class LevelShower(BaseWidget):
         pygame.draw.polygon(self.master, self.bg, self.points)
         self.lvl_value.draw()
 
-    def update(self):
+    def update(self, dt: float) -> None:
         pass
 
-    def event_handler(self):
+    def event_handler(self) -> None:
         pass
 
     def set_level(self, level: str) -> None:

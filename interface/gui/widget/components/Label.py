@@ -29,7 +29,7 @@ class Label(BaseWidget):
     def event_handler(self) -> None:
         pass
 
-    def update(self) -> None:
+    def update(self, dt: float) -> None:
         pass
 
     def draw(self) -> None:

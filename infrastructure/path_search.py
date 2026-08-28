@@ -7,7 +7,7 @@ class PathParser:
         self.lvl_dir_dict = {
             path.name: path for path in Path(self.base).iterdir()
             if path.is_dir()}
-        self.list_files = {}
+        self.list_files: dict[str, Path] = {}
 
     def get_files(self, level: str) -> dict[str, Path]:
         dirs = self.lvl_dir_dict.get(level)

@@ -13,7 +13,7 @@ class Line:
         self.color = color
         self.width = width
 
-    def draw(self, target: pygame.Surface):
+    def draw(self, target: pygame.Surface) -> None:
         pygame.draw.line(
             target, self.color, self.start, self.end, self.width
         )

@@ -5,7 +5,7 @@ import pygame
 class BaseWidget(ABC):
 
     def __init__(self,
-                 font: pygame.font.Font | None,
+                 font: pygame.font.Font,
                  bg_color: pygame.Color,
                  font_color: pygame.Color,
                  master: pygame.Surface,
@@ -20,7 +20,7 @@ class BaseWidget(ABC):
         ...
 
     @abstractmethod
-    def update(self) -> None:
+    def update(self, dt: float) -> None:
         ...
 
     @abstractmethod

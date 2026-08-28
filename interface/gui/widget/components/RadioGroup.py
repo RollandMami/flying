@@ -15,7 +15,7 @@ class RadioGroup:
 
             def on_click() -> None:
                 self.select(btn)
-                if original_call:
+                if original_call is not None:
                     original_call()
 
             btn.callable = on_click
@@ -35,7 +35,7 @@ class RadioGroup:
             rd.event_handler()
 
     @property
-    def value(self):
+    def value(self) -> str | None:
         if self._active is not None:
             return self._active.value
         return None

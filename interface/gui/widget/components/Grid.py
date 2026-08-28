@@ -6,7 +6,7 @@ from .Line import Line
 class Grid(BaseWidget):
 
     def __init__(self,
-                 font: pygame.font.Font | None,
+                 font: pygame.font.Font,
                  bg_color: pygame.Color,
                  font_color: pygame.Color,
                  master: pygame.Surface,

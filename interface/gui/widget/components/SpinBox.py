@@ -1,11 +1,9 @@
 from .BaseWidget import BaseWidget
 import pygame
-from typing import Optional
 from ...assets import assets
 from .Button import Button
 from functools import partial
 from .Label import Label
-from math import inf
 
 
 class Spinbox(BaseWidget):
@@ -17,8 +15,8 @@ class Spinbox(BaseWidget):
                  font_color: pygame.Color,
                  master: pygame.Surface,
                  position: tuple[int, int],
-                 max: Optional[int] = inf,
-                 min: Optional[int] = 1,
+                 max: int = 2000,
+                 min: int = 1,
                  ) -> None:
         super().__init__(font, bg_color, font_color, master)
         self.value = min
@@ -51,17 +49,17 @@ class Spinbox(BaseWidget):
         self.texte = Label(self.val_str, self.font,
                            self.fg, self.bg, self.master, (x, y))
 
-    def draw(self):
+    def draw(self) -> None:
         pygame.draw.rect(self.master, self.fg, self.rect)
         self.down_btn.draw()
         self.up_btn.draw()
         self.texte.draw()
 
-    def update(self):
-        return super().update()
+    def update(self, dt: float) -> None:
+        pass
 
-    def event_handler(self):
-        return super().event_handler()
+    def event_handler(self) -> None:
+        pass
 
     def upgrading(self) -> None:
         if self.value < self.max:

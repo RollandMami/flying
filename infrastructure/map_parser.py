@@ -118,7 +118,8 @@ class TxtParser(BaseParser):
                        arg: str,
                        line_num: int,
                        line_content: str) -> dict[str, Any]:
-        head, opts_str = self._split_head_and_options(arg)
+        head, opts_str = self._split_head_and_options(arg, line_num,
+                                                      line_content)
         tokens = head.split()
         if len(tokens) < 3:
             raise ParserError(
@@ -152,7 +153,8 @@ class TxtParser(BaseParser):
                               arg: str,
                               line_num: int,
                               line_content: str) -> dict[str, Any]:
-        head, opts_str = self._split_head_and_options(arg)
+        head, opts_str = self._split_head_and_options(arg, line_num,
+                                                      line_content)
         if "-" not in head:
             raise ParserError(
                 line_num, line_content, "expected format '<zone1>-<zone2>'"

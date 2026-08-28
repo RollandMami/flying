@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import pygame
-from typing import Callable, Optional
+from typing import Callable, Optional, Any
 from configparser import ConfigParser
 
 
@@ -10,7 +10,7 @@ class BaseScene(ABC):
                  master: pygame.Surface,
                  bg: pygame.Color,
                  fg: pygame.Color,
-                 on_finished: Callable,
+                 on_finished: Callable[..., Any],
                  config: Optional[ConfigParser] = None
                  ) -> None:
         self.master = master

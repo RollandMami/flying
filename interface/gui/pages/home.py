@@ -21,9 +21,17 @@ class HomeScene(BaseScene):
         super().__init__(master, bg, fg, on_finished, config)
         self.mrect = self.master.get_rect()
         self.width, self.height = master.get_width(), master.get_height()
-        self.btn_bg = self.cfg.get("color-theme", "COLOR_BTN_DEFAULT")
-        self.bttm_bg = self.cfg.get("color-theme", "COLOR_BTN_ACCENT")
-        self.hover_bg = self.cfg.get("color-theme", "COLOR_BTN_HOVER")
+        if self.cfg is not None:
+            btn_bg_str = self.cfg.get("color-theme", "COLOR_BTN_DEFAULT")
+            bttm_bg_str = self.cfg.get("color-theme", "COLOR_BTN_ACCENT")
+            hover_bg_str = self.cfg.get("color-theme", "COLOR_BTN_HOVER")
+        else:
+            btn_bg_str = "grey"
+            bttm_bg_str = "darkgrey"
+            hover_bg_str = "lightgrey"
+        self.btn_bg = pygame.Color(btn_bg_str)
+        self.bttm_bg = pygame.Color(bttm_bg_str)
+        self.hover_bg = pygame.Color(hover_bg_str)
         self.font = assets.BOPS_FONT(38)
         self.font2 = assets.BOPS_FONT(25)
         self.font3 = assets.BOPS_FONT(20)
@@ -82,7 +90,6 @@ class HomeScene(BaseScene):
     def _set_map_id(self, id: int) -> None:
         if id >= 1 and id <= 3:
             self.map_id = f"MAP ID: {str(id).zfill(2)}"
-        self.update()
 
     def event_handler(self, evt: pygame.event.Event) -> None:
         pass
@@ -98,6 +105,7 @@ class HomeScene(BaseScene):
         self.lvl_show.draw()
 
     def update(self, dt: float) -> None:
+        super().update(dt)
         self.titre.update(dt)
         self.btn_start.update(dt)
         self.btn_option.update(dt)

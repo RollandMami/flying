@@ -1,5 +1,6 @@
 import pygame
 from functools import partial
+from typing import Any
 import os
 
 bpath = "/".join(os.path.abspath(__file__).split("/")[:-1])
@@ -8,7 +9,8 @@ bpath = "/".join(os.path.abspath(__file__).split("/")[:-1])
 class Font:
     _cache: dict[tuple[str, int], pygame.font.Font] = {}
 
-    def __new__(cls, path: str, size: int) -> pygame.font.Font:
+    @classmethod
+    def get(cls, path: str, size: int) -> pygame.font.Font:
         key = (path, size)
         if key not in cls._cache:
             cls._cache[key] = pygame.font.Font(path, size)
@@ -45,14 +47,14 @@ class Icon:
         new_icon.surface = pygame.transform.smoothscale(self._original, size)
         return new_icon
 
-    def get_rect(self, **kwargs) -> pygame.Rect:
+    def get_rect(self, **kwargs: Any) -> pygame.Rect:
         return self.surface.get_rect(**kwargs)
 
     def draw(self, target: pygame.Surface, pos: tuple[int, int]) -> None:
         target.blit(self.surface, pos)
 
 
-_SPRITESHEETS: dict[str: list[pygame.Surface]] = {}
+_SPRITESHEETS: dict[str, list[pygame.Surface]] = {}
 
 
 def load_spritesheet(name: str,
@@ -70,9 +72,9 @@ DRN_WALK = partial(load_spritesheet, "drone_WALK.png", 120, 100)
 DRN_IDLE = partial(load_spritesheet, "drone_IDLE.png", 120, 80)
 DRN_SCAN = partial(load_spritesheet, "drone_scan.png", 120, 80)
 
-BOPS_FONT = partial(Font, os.path.join(bpath, "BlackOpsOne-Regular.ttf"))
-DIRT_FONT = partial(Font, os.path.join(bpath, "RubikDirt-Regular.ttf"))
-FAST_FONT = partial(Font, os.path.join(bpath, "FasterOne-Regular.ttf"))
+BOPS_FONT = partial(Font.get, os.path.join(bpath, "BlackOpsOne-Regular.ttf"))
+DIRT_FONT = partial(Font.get, os.path.join(bpath, "RubikDirt-Regular.ttf"))
+FAST_FONT = partial(Font.get, os.path.join(bpath, "FasterOne-Regular.ttf"))
 
 MENU_ICON = partial(Icon, os.path.join(bpath, "menu.png"))
 HOME_ICON = partial(Icon, os.path.join(bpath, "home.png"))
