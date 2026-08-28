@@ -15,11 +15,12 @@ class Spinbox(BaseWidget):
                  font_color: pygame.Color,
                  master: pygame.Surface,
                  position: tuple[int, int],
+                 default: int = 1,
                  max: int = 2000,
                  min: int = 1,
                  ) -> None:
         super().__init__(font, bg_color, font_color, master)
-        self.value = min
+        self.value = default
         self.min = min
         self.max = max
         self.up_icon = assets.UP_ICON((20, 20))
@@ -45,7 +46,7 @@ class Spinbox(BaseWidget):
 
         x = self.rect.centerx - 20
         y = self.rect.bottom - 4
-        self.val_str = f"{self.value:02d}"
+        self.val_str = f"{str(self.value).zfill(2)}"
         self.texte = Label(self.val_str, self.font,
                            self.fg, self.bg, self.master, (x, y))
 
@@ -64,11 +65,11 @@ class Spinbox(BaseWidget):
     def upgrading(self) -> None:
         if self.value < self.max:
             self.value += 1
-            self.val_str = f"{self.value:02d}"
+            self.val_str = f"{str(self.value).zfill(2)}"
             self.texte.set_text(self.val_str)
 
     def downgrading(self) -> None:
         if self.value > self.min:
             self.value -= 1
-            self.val_str = f"{self.value:02d}"
+            self.val_str = f"{str(self.value).zfill(2)}"
             self.texte.set_text(self.val_str)

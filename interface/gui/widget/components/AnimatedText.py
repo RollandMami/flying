@@ -35,6 +35,14 @@ class AnimatedText(BaseWidget):
     def is_finished(self) -> bool:
         return self.index >= len(self.str)
 
+    @property
+    def bottom(self) -> int:
+        return self.text_rect.bottom
+
+    @property
+    def rect(self) -> pygame.Rect:
+        return self.text_rect
+
     def update(self, dt: float) -> None:
         if self.is_finished:
             return

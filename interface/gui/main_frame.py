@@ -1,6 +1,8 @@
 import sys
 import pygame
 from configparser import ConfigParser
+from pathlib import Path
+from typing import Protocol
 from .pages import (
     BaseScene,
     GameScene,
@@ -10,12 +12,19 @@ from .pages import (
     SplashScene)
 
 
+class PathFinder(Protocol):
+    def get_map_file(self, level: str, id: int) -> dict[str, Path]:
+        ...
+
+
 class SceneManager:
 
     def __init__(self,
                  title: str,
-                 config: ConfigParser) -> None:
+                 config: ConfigParser,
+                 path_manager: PathFinder) -> None:
         pygame.init()
+        self.p_m = path_manager
         self.cfg = config
         self.w = self.get_width(config)
         self.h = self.get_height(config)
@@ -38,7 +47,7 @@ class SceneManager:
                 self.switch_to, self.cfg),
             "SETTINGS": SettingsScene(
                 self.screen, self.bg, txt_mute,
-                self.switch_to, self.cfg),
+                self.switch_to, self.cfg, self.p_m),
             "GAME": GameScene(
                 self.screen, self.bg, txt_mute,
                 self.switch_to, self.cfg

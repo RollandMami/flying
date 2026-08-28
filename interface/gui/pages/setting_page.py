@@ -1,5 +1,6 @@
 import pygame
-from typing import Callable, Any, Optional
+from pathlib import Path
+from typing import Callable, Any, Protocol
 from functools import partial
 from .base_scene import BaseScene
 from ..assets import assets
@@ -13,6 +14,11 @@ from ..widget import (
     Spinbox)
 
 
+class PathFinder(Protocol):
+    def get_map_file(self, level: str, id: int) -> dict[str, Path]:
+        ...
+
+
 class SettingsScene(BaseScene):
 
     def __init__(self,
@@ -20,8 +26,10 @@ class SettingsScene(BaseScene):
                  bg: pygame.Color,
                  fg: pygame.Color,
                  on_finished: Callable[..., Any],
-                 config: Optional[ConfigParser]) -> None:
+                 config: ConfigParser,
+                 path_manager: PathFinder) -> None:
         super().__init__(master, bg, fg, on_finished, config)
+        self.p_m = path_manager
         self.font = assets.BOPS_FONT(35)
         self.font2 = assets.BOPS_FONT(25)
         self.font_title = assets.DIRT_FONT(80)
@@ -38,6 +46,9 @@ class SettingsScene(BaseScene):
         self.hover_bg = pygame.Color(hover_bg_str)
         self.unsel_bg = pygame.Color(unsel_bg_str)
         self.sel_bg = pygame.Color(sel_bg_str)
+        self.stage = self.cfg.get("level", "stage")
+        self.map_id_val = self.cfg.getint("level", "map_id")
+
         self._build_widget()
 
     def _build_widget(self) -> None:
@@ -78,7 +89,7 @@ class SettingsScene(BaseScene):
                                )
         self.btn_save = self.base_btn(
                                position=(mx - ex, my - ey),
-                               call=lambda: self.call("HELP"),
+                               call=lambda: self.save(),
                                icon_gap=0,
                                icon=assets.SAVE_ICON(30)
                                )
@@ -100,33 +111,40 @@ class SettingsScene(BaseScene):
         self.lvl_label = AnimatedText(
                     self.master, self.font, "LEVEL :",
                     self.fg, 0, -110, 0.03)
-        self.lvl_value = Label("...", self.font2, self.bg,
-                               self.fg, self.master, (0, 0))
+        self.lvl_StrVar = Label(
+            self.stage, self.font2, self.bg,
+            self.fg, self.master, (0, 0))
         self.map_id = AnimatedText(
                     self.master, self.font, "MAP ID :",
                     self.fg, 0, 20, 0.03)
         self.display = AnimatedText(
                     self.master, self.font, "DISPLAY :",
                     self.fg, 0, 130, 0.03)
+        y_rdo = self.lvl_label.bottom + 20
         self.easy = self.base_rdo(
-            text="EASY", position=(rest_left, 240),
+            text="EASY", position=(rest_left, y_rdo),
             call=lambda: self.select_level(), value="easy")
         self.medium = self.base_rdo(
-            text="MEDIUM", position=(x_medium, 240),
+            text="MEDIUM", position=(x_medium, y_rdo),
             call=lambda: self.select_level(), value="medium")
         self.hard = self.base_rdo(
-            text="HARD", position=(x_hard, 240),
+            text="HARD", position=(x_hard, y_rdo),
             call=lambda: self.select_level(), value="hard")
         self.challenge = self.base_rdo(
-            text="BONUS", position=(x_bonus, 240),
+            text="BONUS", position=(x_bonus, y_rdo),
             call=lambda: self.select_level(), value="challenger")
         self.radio_group = RadioGroup()
         self.radio_group.add_radio(self.easy)
         self.radio_group.add_radio(self.medium)
         self.radio_group.add_radio(self.hard)
         self.radio_group.add_radio(self.challenge)
-        self.spn = Spinbox(self.font2, self.bg, self.bttm_bg, self.hover_bg,
-                           self.fg, self.master, (x_medium, 380))
+        for rdo in self.radio_group.radios:
+            if rdo.value == self.stage:
+                self.radio_group.select(rdo)
+        y_spn = self.map_id.bottom + 15
+        self.spn = Spinbox(self.font2, self.bg, self.bttm_bg,
+                           self.hover_bg, self.fg, self.master,
+                           (x_medium, y_spn), self.map_id_val)
 
     def event_handler(self, event: pygame.event.Event) -> None:
         self.radio_group.event_handler()
@@ -147,11 +165,11 @@ class SettingsScene(BaseScene):
         self.display.update(dt)
 
         gap = 10
-        self.lvl_value.set_pos((
+        self.lvl_StrVar.set_pos((
             self.lvl_label.text_rect.right + gap,
             self.lvl_label.text_rect.bottom
         ))
-        self.lvl_value.update(dt)
+        self.lvl_StrVar.update(dt)
 
     def render(self, target: pygame.Surface) -> None:
         target.fill(self.bg)
@@ -168,9 +186,16 @@ class SettingsScene(BaseScene):
         self.hard.draw()
         self.challenge.draw()
         self.display.draw()
-        self.lvl_value.draw()
+        self.lvl_StrVar.draw()
         self.spn.draw()
 
     def select_level(self) -> None:
-        value = self.radio_group.value
-        self.lvl_value.set_text(value if value is not None else "")
+        self.stage = self.radio_group.value
+        self.cfg.set("level", "stage", self.stage)
+        self.lvl_StrVar.set_text(self.stage if self.stage is not None else "")
+
+    def save(self) -> None:
+        self.cfg.set("level", "map_id", str(self.spn.value))
+        print(self.p_m.get_map_file(self.stage, self.map_id_val))
+        with open("config.ini", "w") as f:
+            self.cfg.write(f)

@@ -2,7 +2,7 @@ from pathlib import Path
 
 
 class PathParser:
-    def __init__(self, parent: str = ".") -> None:
+    def __init__(self, parent: str = "maps/") -> None:
         self.base = parent
         self.lvl_dir_dict = {
             path.name: path for path in Path(self.base).iterdir()
@@ -23,3 +23,8 @@ class PathParser:
             if n.startswith(f"{id:02d}_"):
                 return {n: p}
         return {}
+
+
+if __name__ == "__main__":
+    ph = PathParser()
+    print(ph.get_files("easy"))
