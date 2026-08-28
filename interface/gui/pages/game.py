@@ -1,7 +1,8 @@
 import pygame
-from .. import settings
-from typing import Callable, Any
+from typing import Callable, Any, Optional
 from .base_scene import BaseScene
+from configparser import ConfigParser
+from functools import partial
 from ..assets import assets
 from ..widget import (
     Button,
@@ -15,9 +16,12 @@ class GameScene(BaseScene):
                  master: pygame.Surface,
                  bg: pygame.Color,
                  fg: pygame.Color,
-                 on_finished: Callable[..., Any]):
-        super().__init__(master, bg, fg, on_finished)
-        self.btn_bg = settings.COLOR_BTN_DEFAULT
+                 on_finished: Callable[..., Any],
+                 config: Optional[ConfigParser]) -> None:
+        super().__init__(master, bg, fg, on_finished, config)
+        self.btn_bg = self.cfg.get("color-theme", "COLOR_BTN_DEFAULT")
+        self.bttm_bg = self.cfg.get("color-theme", "COLOR_BTN_ACCENT")
+        self.hover_bg = self.cfg.get("color-theme", "COLOR_BTN_HOVER")
         self.font = assets.BOPS_FONT(15)
         self.font_title = assets.DIRT_FONT(80)
         mrect = self.master.get_rect()
@@ -25,16 +29,22 @@ class GameScene(BaseScene):
         my = mrect.bottom
         bw, bh = 45, 40
         my = my - bh - 20
-        self.btn_home = Button("", bw, bh, self.font, self.btn_bg,
-                               self.fg, self.master, (20, my),
-                               lambda: on_finished("HOME"),
+        self.base_btn = partial(
+            Button, width=bw, height=bh, font=self.font, bg_color=self.btn_bg,
+            bottom_color=self.bttm_bg, hover_color=self.hover_bg,
+            font_color=self.fg, master=self.master
+        )
+        self.btn_home = self.base_btn(
+                               text="",
+                               position=(20, my),
+                               call=lambda: on_finished("HOME"),
                                icon_gap=0,
                                icon=assets.HOME_ICON(30)
                                )
-        self.btn_setting = Button(
-                               "", bw, bh, self.font, self.btn_bg,
-                               self.fg, self.master, (20 + bw + 20, my),
-                               lambda: on_finished("SETTINGS"),
+        self.btn_setting = self.base_btn(
+                               text="",
+                               position=(20 + bw + 20, my),
+                               call=lambda: on_finished("SETTINGS"),
                                icon_gap=0,
                                icon=assets.SETTING_ICON(30)
                                )

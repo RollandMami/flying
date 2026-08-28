@@ -1,7 +1,6 @@
 from .BaseWidget import BaseWidget
 import pygame
 from typing import Callable, Any, Optional
-from ... import settings
 from ...assets import Icon
 
 
@@ -13,6 +12,8 @@ class Button(BaseWidget):
                  height: int,
                  font: pygame.font.Font,
                  bg_color: pygame.Color,
+                 bottom_color: pygame.Color,
+                 hover_color: pygame.Color,
                  font_color: pygame.Color,
                  master: pygame.Surface,
                  position: tuple[int, int],
@@ -22,7 +23,7 @@ class Button(BaseWidget):
                  elevation: int = 6,) -> None:
         super().__init__(font, bg_color, font_color, master)
         self.pressed = False
-        self.hover_color = settings.COLOR_BTN_HOVER
+        self.hover_color = hover_color
         self.callable = call
         self.elevation = elevation
         self.dynamic_elv = elevation
@@ -32,7 +33,7 @@ class Button(BaseWidget):
         self.top_color = self.bg
 
         self.bottom_rec = pygame.Rect(position, (width, elevation))
-        self.bottom_col = settings.COLOR_BTN_ACCENT
+        self.bottom_col = bottom_color
 
         self.text = font.render(text, True, self.fg)
 

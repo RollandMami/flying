@@ -1,8 +1,8 @@
 import pygame
 from ..widget import ProgressBar, AnimatedText
-from .. import settings
 from .base_scene import BaseScene
-from typing import Callable
+from typing import Callable, Optional
+from configparser import ConfigParser
 from ..assets import assets
 
 
@@ -12,16 +12,18 @@ class SplashScene(BaseScene):
                  master: pygame.Surface,
                  bg: pygame.Color,
                  fg: pygame.Color,
-                 on_finished: Callable) -> None:
-        super().__init__(master, bg, fg, on_finished)
+                 on_finished: Callable,
+                 config: Optional[ConfigParser]) -> None:
+        super().__init__(master, bg, fg, on_finished, config)
         self.width, self.height = master.get_width(), master.get_height()
         self.font = assets.BOPS_FONT(20)
         self.font_title = assets.DIRT_FONT(80)
-        self.prog = ProgressBar(settings.COLOR_BTN_DEFAULT,
-                                self.font,
-                                settings.COLOR_TEXT_PRIMARY,
-                                self.master, (10, self.height - 35),
-                                duration=4)
+        self.prog = ProgressBar(
+            self.cfg.get("color-theme", "COLOR_BTN_DEFAULT"),
+            self.font,
+            self.cfg.get("color-theme", "COLOR_TEXT_PRIMARY"),
+            self.master, (10, self.height - 35),
+            duration=4)
         self.text = AnimatedText(
             self.master,
             self.font_title,

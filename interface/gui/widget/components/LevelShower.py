@@ -29,25 +29,20 @@ class LevelShower(BaseWidget):
             self.level, self.icons["EASY"]).surface
         self.current_icon = self.default_icon
 
-        # cercle:
         topleft = position[0], position[1]
         self.circle_rect = pygame.Rect(topleft, (90, 90))
-        #   icone level
         self.icon_rect = self.current_icon.get_rect(
             center=self.circle_rect.center
         )
 
         x, y = position
-        # rectangle
         x_rect = x + 90 - 3
         y_rect = y + 30
         self.rect = pygame.Rect(x_rect, y_rect, 100, 30)
-        #   texte du level
         txt_x, txt_y = self.rect.left + 6, self.rect.bottom - 1
         self.lvl_value = Label(
             self.level, self.font, self.bg,
             self.fg, self.master, (txt_x, txt_y))
-        # triangle du fin
         d = 90
         x1 = x + d - 3 + 100
         y1 = y + 30

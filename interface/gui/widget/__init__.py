@@ -7,7 +7,7 @@ from .components import (
     RadioGroup,
     Label,
     LevelShower,
-	Spinbox,
+    Spinbox,
     )
 
 __all__ = ["Button",
@@ -18,4 +18,4 @@ __all__ = ["Button",
            "RadioGroup",
            "Label",
            "LevelShower",
-		   "Spinbox"]
+           "Spinbox"]

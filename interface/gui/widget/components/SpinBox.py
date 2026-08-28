@@ -12,6 +12,8 @@ class Spinbox(BaseWidget):
     def __init__(self,
                  font: pygame.font.Font,
                  bg_color: pygame.Color,
+                 bottom_color: pygame.Color,
+                 hover_color: pygame.Color,
                  font_color: pygame.Color,
                  master: pygame.Surface,
                  position: tuple[int, int],
@@ -26,8 +28,9 @@ class Spinbox(BaseWidget):
         self.down_icon = assets.DOWN_ICON((20, 20))
         self.base_btn = partial(
             Button, text="", width=20, height=20,
-            font=self.font, bg_color=self.bg,
-            font_color=self.fg, master=self.master, elevation=2)
+            font=self.font, bg_color=self.bg, bottom_color=bottom_color,
+            hover_color=hover_color, font_color=self.fg,
+            master=self.master, elevation=2)
         self.up_btn = self.base_btn(
             position=position, call=lambda: self.upgrading(),
             icon=self.up_icon
@@ -66,7 +69,7 @@ class Spinbox(BaseWidget):
             self.val_str = f"{self.value:02d}"
             self.texte.set_text(self.val_str)
 
-    def downgrading(self)-> None:
+    def downgrading(self) -> None:
         if self.value > self.min:
             self.value -= 1
             self.val_str = f"{self.value:02d}"

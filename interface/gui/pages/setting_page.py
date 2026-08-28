@@ -1,9 +1,9 @@
 import pygame
-from .. import settings
-from typing import Callable, Any
+from typing import Callable, Any, Optional
 from functools import partial
 from .base_scene import BaseScene
 from ..assets import assets
+from configparser import ConfigParser
 from ..widget import (
     Button,
     AnimatedText,
@@ -19,14 +19,19 @@ class SettingsScene(BaseScene):
                  master: pygame.Surface,
                  bg: pygame.Color,
                  fg: pygame.Color,
-                 on_finished: Callable[..., Any]):
-        super().__init__(master, bg, fg, on_finished)
+                 on_finished: Callable[..., Any],
+                 config: Optional[ConfigParser]) -> None:
+        super().__init__(master, bg, fg, on_finished, config)
         self.font = assets.BOPS_FONT(35)
         self.font2 = assets.BOPS_FONT(25)
         self.font_title = assets.DIRT_FONT(80)
         self.c_ico = assets.RDO_CHECK_ICON(20)
         self.u_ico = assets.RDO_UNCHEK_ICON(20)
-        self.btn_bg = settings.COLOR_BTN_DEFAULT
+        self.btn_bg = self.cfg.get("color-theme", "COLOR_BTN_DEFAULT")
+        self.bttm_bg = self.cfg.get("color-theme", "COLOR_BTN_ACCENT")
+        self.hover_bg = self.cfg.get("color-theme", "COLOR_BTN_HOVER")
+        self.unsel_bg = self.cfg.get("color-theme", "COLOR_BORDER")
+        self.sel_bg = self.cfg.get("color-theme", "COLOR_BTN_ACCENT")
         self._build_widget()
 
     def _build_widget(self) -> None:
@@ -43,14 +48,16 @@ class SettingsScene(BaseScene):
         x_bonus = x_hard + rbw + espx
 
         self.base_btn = partial(
-            Button, text="", width=bw, height=bh,
-            font=self.font, bg_color=self.btn_bg,
-            font_color=self.fg, master=self.master)
+            Button, text="", width=bw, height=bh, font=self.font,
+            bg_color=self.btn_bg, bottom_color=self.bttm_bg,
+            hover_color=self.hover_bg, font_color=self.fg, master=self.master
+        )
         self.base_rdo = partial(
-            RadioButton, width=rbw, height=bh,
-            font=self.font2, bg_color=self.btn_bg,
-            font_color=self.fg, master=self.master,
-            check_icon=self.c_ico, icon=self.u_ico)
+            RadioButton, width=rbw, height=bh, font=self.font2,
+            bg_color=self.btn_bg, bottom_color=self.bttm_bg,
+            hover_color=self.hover_bg, selected_color=self.sel_bg,
+            unselected_color=self.unsel_bg, font_color=self.fg,
+            master=self.master, check_icon=self.c_ico, icon=self.u_ico)
         self.btn_home = self.base_btn(
                                       position=(20, 20),
                                       call=lambda: self.call("HOME"),
@@ -112,7 +119,8 @@ class SettingsScene(BaseScene):
         self.radio_group.add_radio(self.medium)
         self.radio_group.add_radio(self.hard)
         self.radio_group.add_radio(self.challenge)
-        self.spn = Spinbox(self.font2, self.bg, self.fg, self.master, (x_medium, 380))
+        self.spn = Spinbox(self.font2, self.bg, self.bttm_bg, self.hover_bg,
+                           self.fg, self.master, (x_medium, 380))
 
     def event_handler(self, event: pygame.event.Event) -> None:
         self.radio_group.event_handler()

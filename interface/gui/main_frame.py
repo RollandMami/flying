@@ -1,6 +1,7 @@
 import sys
 import pygame
-from . import settings
+from typing import Optional
+from configparser import ConfigParser
 from .pages import (
     BaseScene,
     GameScene,
@@ -12,39 +13,69 @@ from .pages import (
 
 class SceneManager:
 
-    def __init__(self, w: int, h: int, title: str) -> None:
+    def __init__(self,
+                 title: str,
+                 config: Optional[ConfigParser]) -> None:
         pygame.init()
-        self.screen = pygame.display.set_mode((w, h))
+        self.cfg = config
+        self.w = self.get_width(config)
+        self.h = self.get_height(config)
+        self.screen = pygame.display.set_mode((self.w, self.h))
         pygame.display.set_caption(title)
         self.clock = pygame.time.Clock()
         self.is_running = True
-        self.w = w
-        self.h = h
-        self.bg = settings.COLOR_BG_MAIN
-        txt_mute = settings.COLOR_TEXT_MUTED
         self.title = title
+        self.fps = self.cfg.getint("display", "FPS")
+        self.bg = self.cfg.get("color-theme", "COLOR_BG_MAIN")
+        txt_mute = self.cfg.get("color-theme", "COLOR_TEXT_MUTED")
 
         self.scenes: dict[str, BaseScene] = {
             "SPLASH": SplashScene(
                 self.screen, self.bg, txt_mute,
-                self.switch_to),
+                self.switch_to, self.cfg),
             "HOME": HomeScene(
                 self.screen, self.bg, txt_mute,
-                self.switch_to),
+                self.switch_to, self.cfg),
             "SETTINGS": SettingsScene(
                 self.screen, self.bg, txt_mute,
-                self.switch_to),
+                self.switch_to, self.cfg),
             "GAME": GameScene(
                 self.screen, self.bg, txt_mute,
-                self.switch_to
+                self.switch_to, self.cfg
                 ),
             "HELP": HelpScene(
                 self.screen, self.bg, txt_mute,
-                self.switch_to
+                self.switch_to, self.cfg
                 ),
         }
 
         self.current_scene: BaseScene = self.scenes["SPLASH"]
+
+    def _get_dimension(
+        self, config: ConfigParser,
+        key: str, default: int,
+        min_value: int, max_value: int,
+            ) -> int:
+        if not config:
+            return default
+
+        value = config.getint("display", key)
+
+        if value <= min_value:
+            print(f"[WARNING]: Min {key} = {min_value}")
+            return min_value
+        if value >= max_value:
+            print(f"[WARNING]: Max {key} = {max_value}")
+            return max_value
+        return value
+
+    def get_width(self, config: ConfigParser) -> int:
+        return self._get_dimension(config, "width", default=1280,
+                                   min_value=960, max_value=1920)
+
+    def get_height(self, config: ConfigParser) -> int:
+        return self._get_dimension(config, "height", default=820,
+                                   min_value=620, max_value=1080)
 
     def switch_to(self, scene_name: str) -> None:
         """Change la scène active."""
@@ -56,7 +87,7 @@ class SceneManager:
 
     def run(self) -> None:
         while self.is_running:
-            dt = self.clock.tick(60) / 1000
+            dt = self.clock.tick(self.fps) / 1000
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.is_running = False
