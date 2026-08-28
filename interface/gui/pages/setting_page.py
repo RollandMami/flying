@@ -27,18 +27,11 @@ class SettingsScene(BaseScene):
         self.font_title = assets.DIRT_FONT(80)
         self.c_ico = assets.RDO_CHECK_ICON(20)
         self.u_ico = assets.RDO_UNCHEK_ICON(20)
-        if self.cfg is not None:
-            btn_bg_str = self.cfg.get("color-theme", "COLOR_BTN_DEFAULT")
-            bttm_bg_str = self.cfg.get("color-theme", "COLOR_BTN_ACCENT")
-            hover_bg_str = self.cfg.get("color-theme", "COLOR_BTN_HOVER")
-            unsel_bg_str = self.cfg.get("color-theme", "COLOR_BORDER")
-            sel_bg_str = self.cfg.get("color-theme", "COLOR_BTN_ACCENT")
-        else:
-            btn_bg_str = "grey"
-            bttm_bg_str = "darkgrey"
-            hover_bg_str = "lightgrey"
-            unsel_bg_str = "black"
-            sel_bg_str = "white"
+        btn_bg_str = self.cfg.get("color-theme", "COLOR_BTN_DEFAULT")
+        bttm_bg_str = self.cfg.get("color-theme", "COLOR_BTN_ACCENT")
+        hover_bg_str = self.cfg.get("color-theme", "COLOR_BTN_HOVER")
+        unsel_bg_str = self.cfg.get("color-theme", "COLOR_BORDER")
+        sel_bg_str = self.cfg.get("color-theme", "COLOR_BTN_ACCENT")
 
         self.btn_bg = pygame.Color(btn_bg_str)
         self.bttm_bg = pygame.Color(bttm_bg_str)

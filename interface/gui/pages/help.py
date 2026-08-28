@@ -1,6 +1,6 @@
 import pygame
 from ..widget import Button, AnimatedText
-from typing import Callable, Any, Optional
+from typing import Callable, Any
 from .base_scene import BaseScene
 from ..assets import assets
 from configparser import ConfigParser
@@ -14,11 +14,15 @@ class HelpScene(BaseScene):
                  bg: pygame.Color,
                  fg: pygame.Color,
                  on_finished: Callable[..., Any],
-                 config: Optional[ConfigParser]) -> None:
+                 config: ConfigParser) -> None:
         super().__init__(master, bg, fg, on_finished, config)
-        self.btn_bg = self.cfg.get("color-theme", "COLOR_BTN_DEFAULT")
-        self.bttm_bg = self.cfg.get("color-theme", "COLOR_BTN_ACCENT")
-        self.hover_bg = self.cfg.get("color-theme", "COLOR_BTN_HOVER")
+        btn_bg = self.cfg.get("color-theme", "COLOR_BTN_DEFAULT")
+        bttm_bg = self.cfg.get("color-theme", "COLOR_BTN_ACCENT")
+        hover_bg = self.cfg.get("color-theme", "COLOR_BTN_HOVER")
+
+        self.btn_bg = pygame.Color(btn_bg)
+        self.bttm_bg = pygame.Color(bttm_bg)
+        self.hover_bg = pygame.Color(hover_bg)
         self.font = assets.BOPS_FONT(15)
         self.font_title = assets.DIRT_FONT(80)
         cx, cy = self.master.get_rect().center

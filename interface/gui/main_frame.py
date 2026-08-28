@@ -1,6 +1,5 @@
 import sys
 import pygame
-from typing import Optional
 from configparser import ConfigParser
 from .pages import (
     BaseScene,
@@ -15,7 +14,7 @@ class SceneManager:
 
     def __init__(self,
                  title: str,
-                 config: Optional[ConfigParser]) -> None:
+                 config: ConfigParser) -> None:
         pygame.init()
         self.cfg = config
         self.w = self.get_width(config)
@@ -26,8 +25,9 @@ class SceneManager:
         self.is_running = True
         self.title = title
         self.fps = self.cfg.getint("display", "FPS")
-        self.bg = self.cfg.get("color-theme", "COLOR_BG_MAIN")
-        txt_mute = self.cfg.get("color-theme", "COLOR_TEXT_MUTED")
+        self.bg = pygame.Color(self.cfg.get("color-theme", "COLOR_BG_MAIN"))
+        txt_mute = pygame.Color(
+            self.cfg.get("color-theme", "COLOR_TEXT_MUTED"))
 
         self.scenes: dict[str, BaseScene] = {
             "SPLASH": SplashScene(

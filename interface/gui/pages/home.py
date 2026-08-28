@@ -1,6 +1,6 @@
 import pygame
 from .base_scene import BaseScene
-from typing import Callable, Any, Optional
+from typing import Callable, Any
 from ..assets import assets
 from configparser import ConfigParser
 from functools import partial
@@ -17,18 +17,13 @@ class HomeScene(BaseScene):
                  bg: pygame.Color,
                  fg: pygame.Color,
                  on_finished: Callable[..., Any],
-                 config: Optional[ConfigParser]) -> None:
+                 config: ConfigParser) -> None:
         super().__init__(master, bg, fg, on_finished, config)
         self.mrect = self.master.get_rect()
         self.width, self.height = master.get_width(), master.get_height()
-        if self.cfg is not None:
-            btn_bg_str = self.cfg.get("color-theme", "COLOR_BTN_DEFAULT")
-            bttm_bg_str = self.cfg.get("color-theme", "COLOR_BTN_ACCENT")
-            hover_bg_str = self.cfg.get("color-theme", "COLOR_BTN_HOVER")
-        else:
-            btn_bg_str = "grey"
-            bttm_bg_str = "darkgrey"
-            hover_bg_str = "lightgrey"
+        btn_bg_str = self.cfg.get("color-theme", "COLOR_BTN_DEFAULT")
+        bttm_bg_str = self.cfg.get("color-theme", "COLOR_BTN_ACCENT")
+        hover_bg_str = self.cfg.get("color-theme", "COLOR_BTN_HOVER")
         self.btn_bg = pygame.Color(btn_bg_str)
         self.bttm_bg = pygame.Color(bttm_bg_str)
         self.hover_bg = pygame.Color(hover_bg_str)
