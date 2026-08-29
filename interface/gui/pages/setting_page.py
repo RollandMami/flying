@@ -18,6 +18,9 @@ class PathFinder(Protocol):
     def get_map_file(self, level: str, id: int) -> dict[str, Path]:
         ...
 
+    def get_files(self, level: str) -> dict[str, Path]:
+        ...
+
 
 class SettingsScene(BaseScene):
 
@@ -48,6 +51,10 @@ class SettingsScene(BaseScene):
         self.sel_bg = pygame.Color(sel_bg_str)
         self.stage = self.cfg.get("level", "stage")
         self.map_id_val = self.cfg.getint("level", "map_id")
+        self.map_files = self.p_m.get_files(self.stage)
+        self.max_spin = len(self.map_files)
+        self.map_fname, self.map_fpath = next(iter(self.p_m.get_map_file(
+            self.stage, self.map_id_val).items()))
 
         self._build_widget()
 
@@ -101,7 +108,7 @@ class SettingsScene(BaseScene):
                                )
         self.btn_cancel = self.base_btn(
                                position=(mx - ex * 3, my - ey),
-                               call=lambda: self.call("HELP"),
+                               call=lambda: self.call("HOME"),
                                icon_gap=0,
                                icon=assets.CLOSE_ICON(30)
                                )
@@ -115,7 +122,7 @@ class SettingsScene(BaseScene):
             self.stage, self.font2, self.bg,
             self.fg, self.master, (0, 0))
         self.map_id = AnimatedText(
-                    self.master, self.font, "MAP ID :",
+                    self.master, self.font, "MAP:",
                     self.fg, 0, 20, 0.03)
         self.display = AnimatedText(
                     self.master, self.font, "DISPLAY :",
@@ -144,10 +151,15 @@ class SettingsScene(BaseScene):
         y_spn = self.map_id.bottom + 15
         self.spn = Spinbox(self.font2, self.bg, self.bttm_bg,
                            self.hover_bg, self.fg, self.master,
-                           (x_medium, y_spn), self.map_id_val)
+                           (x_medium, y_spn), self.map_id_val, self.max_spin)
+        self.map_fname_label = Label(self.map_fname, self.font, self.bg,
+                                     self.fg, self.master,
+                                     (self.spn.right + 20, self.spn.bottom))
+
 
     def event_handler(self, event: pygame.event.Event) -> None:
         self.radio_group.event_handler()
+        self.spn.event_handler()
 
     def update(self, dt: float) -> None:
         self.titre.update(dt)
@@ -170,6 +182,22 @@ class SettingsScene(BaseScene):
             self.lvl_label.text_rect.bottom
         ))
         self.lvl_StrVar.update(dt)
+        curr_level = self.radio_group.value
+        curr_map_id = self.spn.value
+
+        if curr_level != self.stage or curr_map_id != self.map_id_val:
+            self.stage = curr_level
+            self.map_id_val = curr_map_id
+
+            self.map_files = self.p_m.get_files(self.stage)
+            self.spn.max = len(self.map_files)
+
+            map_dict = self.p_m.get_map_file(self.stage, self.map_id_val)
+            if map_dict:
+                self.map_fname, self.map_fpath = next(iter(map_dict.items()))
+                self.map_fname_label.set_text(self.map_fname)
+        self.map_fname_label.update(dt)
+
 
     def render(self, target: pygame.Surface) -> None:
         target.fill(self.bg)
@@ -188,6 +216,7 @@ class SettingsScene(BaseScene):
         self.display.draw()
         self.lvl_StrVar.draw()
         self.spn.draw()
+        self.map_fname_label.draw()
 
     def select_level(self) -> None:
         self.stage = self.radio_group.value
@@ -196,6 +225,5 @@ class SettingsScene(BaseScene):
 
     def save(self) -> None:
         self.cfg.set("level", "map_id", str(self.spn.value))
-        print(self.p_m.get_map_file(self.stage, self.map_id_val))
         with open("config.ini", "w") as f:
             self.cfg.write(f)

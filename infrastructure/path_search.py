@@ -21,8 +21,13 @@ class PathParser:
         files = self.get_files(level)
         for n, p in files.items():
             if n.startswith(f"{id:02d}_"):
-                return {n: p}
+                return {self.format(n): p}
         return {}
+
+    @staticmethod
+    def format(strs: str) -> str:
+        return strs.replace(".txt", "").split(
+            "_", 1)[1].replace("_", " ").title()
 
 
 if __name__ == "__main__":

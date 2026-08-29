@@ -106,4 +106,15 @@ class HomeScene(BaseScene):
         self.btn_option.update(dt)
         self.btn_help.update(dt)
         self.btn_exit.update(dt)
-        self.lvl_map_id.draw()
+        self.lvl_map_id.update(dt)
+        self.lvl_show.update(dt)
+        curr_lvl = self.cfg.get("level", "stage").upper()
+        curr_map_id = self.cfg.getint("level", "map_id")
+        curr_map_id = f"MAP ID: {str(curr_map_id).zfill(2)}"
+        if self.level != curr_lvl:
+            self.level = curr_lvl
+            self.lvl_show.set_level(curr_lvl)
+        if self.map_id != curr_map_id:
+            self.map_id = curr_map_id
+            self.lvl_map_id.set_text(curr_map_id)
+

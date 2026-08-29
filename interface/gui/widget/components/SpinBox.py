@@ -73,3 +73,28 @@ class Spinbox(BaseWidget):
             self.value -= 1
             self.val_str = f"{str(self.value).zfill(2)}"
             self.texte.set_text(self.val_str)
+
+    @property
+    def width(self) -> int:
+        return 100
+
+    @property
+    def height(self) -> int:
+        return 40
+
+    @property
+    def top(self) -> int:
+        return self.rect.top
+
+    @property
+    def bottom(self) -> int:
+        return self.rect.bottom
+
+    @property
+    def left(self) -> int:
+        return self.rect.left - 20
+
+    @property
+    def right(self) -> int:
+        return self.rect.right
+
