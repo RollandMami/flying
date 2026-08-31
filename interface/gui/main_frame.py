@@ -29,6 +29,7 @@ class SceneManager:
         self.w = self.get_width(config)
         self.h = self.get_height(config)
         self.screen = pygame.display.set_mode((self.w, self.h))
+        self.srect = self.screen.get_rect()
         pygame.display.set_caption(title)
         self.clock = pygame.time.Clock()
         self.is_running = True
@@ -70,29 +71,38 @@ class SceneManager:
 
         value = config.getint("display", key)
 
-        if value <= min_value:
+        if value < min_value:
             print(f"[WARNING]: Min {key} = {min_value}")
             return min_value
-        if value >= max_value:
+        if value > max_value:
             print(f"[WARNING]: Max {key} = {max_value}")
             return max_value
         return value
 
     def get_width(self, config: ConfigParser) -> int:
         return self._get_dimension(config, "width", default=1280,
-                                   min_value=960, max_value=1920)
+                                   min_value=900, max_value=1920)
 
     def get_height(self, config: ConfigParser) -> int:
         return self._get_dimension(config, "height", default=820,
-                                   min_value=620, max_value=1080)
+                                   min_value=600, max_value=1080)
 
     def switch_to(self, scene_name: str) -> None:
-        """Change la scène active."""
         if scene_name == "QUIT":
             self.is_running = False
             return
         if scene_name in self.scenes:
             self.current_scene = self.scenes[scene_name]
+
+    def resize(self, new_width: int, new_height: int) -> None:
+        self.w = new_width
+        self.h = new_height
+        self.screen = pygame.display.set_mode((self.w, self.h))
+        self.srect = self.screen.get_rect()
+
+        for scene in self.scenes.values():
+            scene.master = self.screen
+            scene.on_resize(self.w, self.h)
 
     def run(self) -> None:
         while self.is_running:
@@ -104,6 +114,9 @@ class SceneManager:
                     self.current_scene.event_handler(event)
             self.current_scene.update(dt)
             self.current_scene.render(self.screen)
+            c_wdt, c_hgt = self.get_width(self.cfg), self.get_height(self.cfg)
+            if self.srect.width != c_wdt or self.srect.height != c_hgt:
+                self.resize(c_wdt, c_hgt)
             pygame.display.flip()
 
         pygame.quit()

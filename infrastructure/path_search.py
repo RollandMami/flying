@@ -21,9 +21,7 @@ class PathParser:
         files = self.get_files(level)
         for n, p in files.items():
             if n.startswith(f"{id:02d}_"):
-                print(n)
                 return {self.format(n): p}
-        print("None")
         return {}
 
     @staticmethod

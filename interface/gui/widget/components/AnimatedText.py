@@ -40,6 +40,14 @@ class AnimatedText(BaseWidget):
         return self.text_rect.bottom
 
     @property
+    def top(self) -> int:
+        return self.text_rect.top
+
+    @property
+    def right(self) -> int:
+        return self.text_rect.right
+
+    @property
     def rect(self) -> pygame.Rect:
         return self.text_rect
 

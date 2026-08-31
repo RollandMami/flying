@@ -20,13 +20,24 @@ class BaseScene(ABC):
         self.cfg = config
 
     @abstractmethod
+    def _build_widget(self) -> None:
+        ...
+
+    @abstractmethod
     def event_handler(self, event: pygame.event.Event) -> None:
-        pass
+        ...
 
     @abstractmethod
     def update(self, dt: float) -> None:
-        pass
+        ...
 
     @abstractmethod
     def render(self, target: pygame.Surface) -> None:
-        pass
+        ...
+
+    def on_resize(self, new_width: int, new_height: int) -> None:
+        if hasattr(self, "ui_manager"):
+            self.ui_manager.set_window_resolution(
+                (new_width, new_height))
+            self.ui_manager.clear_and_reset()
+        self._build_widget()

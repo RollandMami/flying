@@ -28,8 +28,10 @@ class GameScene(BaseScene):
         self.hover_bg = pygame.Color(hover_bg)
         self.font = assets.BOPS_FONT(15)
         self.font_title = assets.DIRT_FONT(80)
+        self._build_widget()
+
+    def _build_widget(self):
         mrect = self.master.get_rect()
-        cx, _ = mrect.center
         my = mrect.bottom
         bw, bh = 45, 40
         my = my - bh - 20
@@ -41,14 +43,14 @@ class GameScene(BaseScene):
         self.btn_home = self.base_btn(
                                text="",
                                position=(20, my),
-                               call=lambda: on_finished("HOME"),
+                               call=lambda: self.call("HOME"),
                                icon_gap=0,
                                icon=assets.HOME_ICON(30)
                                )
         self.btn_setting = self.base_btn(
                                text="",
                                position=(20 + bw + 20, my),
-                               call=lambda: on_finished("SETTINGS"),
+                               call=lambda: self.call("SETTINGS"),
                                icon_gap=0,
                                icon=assets.SETTING_ICON(30)
                                )

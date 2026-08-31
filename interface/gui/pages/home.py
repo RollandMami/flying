@@ -19,11 +19,10 @@ class HomeScene(BaseScene):
                  on_finished: Callable[..., Any],
                  config: ConfigParser) -> None:
         super().__init__(master, bg, fg, on_finished, config)
-        self.mrect = self.master.get_rect()
-        self.width, self.height = master.get_width(), master.get_height()
         btn_bg_str = self.cfg.get("color-theme", "COLOR_BTN_DEFAULT")
         bttm_bg_str = self.cfg.get("color-theme", "COLOR_BTN_ACCENT")
         hover_bg_str = self.cfg.get("color-theme", "COLOR_BTN_HOVER")
+        self.level = self.cfg.get("level", "stage").upper()
         self.btn_bg = pygame.Color(btn_bg_str)
         self.bttm_bg = pygame.Color(bttm_bg_str)
         self.hover_bg = pygame.Color(hover_bg_str)
@@ -33,13 +32,17 @@ class HomeScene(BaseScene):
         self.rf = assets.FAST_FONT(38)
         self.font_title = assets.DIRT_FONT(80)
 
-        cx, cy = self.master.get_rect().center
+        self._build_widget()
+
+    def _build_widget(self) -> None:
+        self.mrect = self.master.get_rect()
+        self.width, self.height = self.mrect.width, self.mrect.height
+        cx, cy = self.mrect.center
         bw, bh = 260, 45
         ipx, ipy = cx - (bw // 2), cy - (bh // 2)
         e = bh + 20
         wi = 30
 
-        self.level = self.cfg.get("level", "stage").upper()
         map_id = self.cfg.getint("level", "map_id")
         self.map_id = f"MAP ID: {str(map_id).zfill(2)}"
         self.base_btn = partial(
@@ -50,25 +53,25 @@ class HomeScene(BaseScene):
         self.btn_start = self.base_btn(
                                 text="START",
                                 position=(ipx, ipy + e),
-                                call=lambda: on_finished("GAME"),
+                                call=lambda: self.call("GAME"),
                                 icon=assets.START_ICON(wi+10)
                                 )
         self.btn_option = self.base_btn(
                                 text="OPTIONS",
                                 position=(ipx, ipy + e * 2),
-                                call=lambda: on_finished("SETTINGS"),
+                                call=lambda: self.call("SETTINGS"),
                                 icon=assets.SETTING_ICON(wi)
                                  )
         self.btn_help = self.base_btn(
                             text="HELP",
                             position=(ipx, ipy + e * 3),
-                            call=lambda: on_finished("HELP"),
+                            call=lambda: self.call("HELP"),
                             icon=assets.HELP_ICON(wi)
                             )
         self.btn_exit = Button(
                             "QUIT", bw, bh, self.rf, self.btn_bg, self.bttm_bg,
                             self.hover_bg, "red", self.master,
-                            (ipx, ipy + e * 4), lambda: on_finished("QUIT"),
+                            (ipx, ipy + e * 4), lambda: self.call("QUIT"),
                             icon=assets.LOUT_ICON(wi))
         self.titre = AnimatedText(
                     self.master,
@@ -117,4 +120,3 @@ class HomeScene(BaseScene):
         if self.map_id != curr_map_id:
             self.map_id = curr_map_id
             self.lvl_map_id.set_text(curr_map_id)
-

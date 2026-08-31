@@ -15,13 +15,18 @@ class SplashScene(BaseScene):
                  on_finished: Callable[..., Any],
                  config: ConfigParser) -> None:
         super().__init__(master, bg, fg, on_finished, config)
-        self.width, self.height = master.get_width(), master.get_height()
         self.font = assets.BOPS_FONT(20)
         self.font_title = assets.DIRT_FONT(80)
         self.prog_bg = pygame.Color(
             self.cfg.get("color-theme", "COLOR_BTN_DEFAULT"))
         self.prog_fg = pygame.Color(
             self.cfg.get("color-theme", "COLOR_TEXT_PRIMARY"))
+        self._isfinished = False
+        self._build_widget()
+
+    def _build_widget(self) -> None:
+        self.width = self.master.get_width()
+        self.height = self.master.get_height()
         self.prog = ProgressBar(
             self.prog_bg, self.font, self.prog_fg,
             self.master, (10, self.height - 35),
@@ -33,7 +38,6 @@ class SplashScene(BaseScene):
             self.fg,
             delay=0.08
         )
-        self._isfinished = False
 
     def event_handler(self, evt: pygame.event.Event) -> None:
         pass

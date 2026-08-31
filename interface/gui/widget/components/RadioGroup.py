@@ -34,6 +34,12 @@ class RadioGroup:
         for rd in self.radios:
             rd.event_handler()
 
+    def set_active(self, value: str) -> None:
+        for rdo in self.radios:
+            if value == rdo.value:
+                self.select(rdo)
+                return
+
     @property
     def value(self) -> str | None:
         if self._active is not None:

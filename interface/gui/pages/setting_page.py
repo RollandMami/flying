@@ -5,6 +5,7 @@ from functools import partial
 from .base_scene import BaseScene
 from ..assets import assets
 from configparser import ConfigParser
+import pygame_gui as pgui
 from ..widget import (
     Button,
     AnimatedText,
@@ -33,6 +34,8 @@ class SettingsScene(BaseScene):
                  path_manager: PathFinder) -> None:
         super().__init__(master, bg, fg, on_finished, config)
         self.p_m = path_manager
+        self.ui_manager = pgui.UIManager((master.width, master.height))
+        self.display_list = ["940x650", "1280x720", "1366x768", "1600x900"]
         self.font = assets.BOPS_FONT(35)
         self.font2 = assets.BOPS_FONT(25)
         self.font_title = assets.DIRT_FONT(80)
@@ -56,6 +59,11 @@ class SettingsScene(BaseScene):
         self.map_fname, self.map_fpath = next(iter(self.p_m.get_map_file(
             self.stage, self.map_id_val).items()))
 
+        self._istage = self.stage
+        self._imap_files = self.map_files
+        self._imax_spin = self.max_spin
+        self._imap_fname, self._imap_fpath = self.map_fname, self.map_fpath
+        self._iwidth, self._iheight = master.width, master.height
         self._build_widget()
 
     def _build_widget(self) -> None:
@@ -102,7 +110,7 @@ class SettingsScene(BaseScene):
                                )
         self.btn_clear = self.base_btn(
                                position=(mx - ex * 2, my - ey),
-                               call=lambda: self.call("HELP"),
+                               call=lambda: self.restore(),
                                icon_gap=0,
                                icon=assets.CLEAR_ICON(30)
                                )
@@ -155,11 +163,29 @@ class SettingsScene(BaseScene):
         self.map_fname_label = Label(self.map_fname, self.font, self.bg,
                                      self.fg, self.master,
                                      (self.spn.right + 20, self.spn.bottom))
-
+        x_cbo, y_cbo = self.display.right + 90, self.display.top
+        default = f"{self.master.width}x{self.master.height}"
+        self.combo_box = pgui.elements.UIDropDownMenu(
+            self.display_list, default, ((x_cbo, y_cbo), (160, 40)),
+            self.ui_manager
+        )
 
     def event_handler(self, event: pygame.event.Event) -> None:
+        self.ui_manager.process_events(event)
         self.radio_group.event_handler()
         self.spn.event_handler()
+        self.btn_home.event_handler()
+        self.btn_help.event_handler()
+        self.btn_save.event_handler()
+        self.btn_clear.event_handler()
+        self.btn_cancel.event_handler()
+
+        if event.type == pgui.UI_DROP_DOWN_MENU_CHANGED:
+            if event.ui_element == self.combo_box:
+                selected_value = str(event.text)
+                curr_width, curr_height = selected_value.split("x")
+                self.cfg.set("display", "width", curr_width)
+                self.cfg.set("display", "height", curr_height)
 
     def update(self, dt: float) -> None:
         self.titre.update(dt)
@@ -200,7 +226,7 @@ class SettingsScene(BaseScene):
             self.map_id_val = curr_map_id
             self._update_map_info()
         self.map_fname_label.update(dt)
-
+        self.ui_manager.update(dt)
 
     def render(self, target: pygame.Surface) -> None:
         target.fill(self.bg)
@@ -220,6 +246,7 @@ class SettingsScene(BaseScene):
         self.lvl_StrVar.draw()
         self.spn.draw()
         self.map_fname_label.draw()
+        self.ui_manager.draw_ui(self.master)
 
     def select_level(self) -> None:
         self.stage = self.radio_group.value
@@ -240,3 +267,20 @@ class SettingsScene(BaseScene):
         else:
             self.map_fname = "Aucun fichier"
             self.map_fname_label.set_text(self.map_fname)
+
+    def restore(self) -> None:
+        self.stage = self._istage
+        self.radio_group.set_active(self.stage)
+        self.lvl_StrVar.set_text(self._istage)
+        self.map_files = self.p_m.get_files(self.stage)
+        self.max_spin = len(self.map_files)
+        self.spn.max = self.max_spin
+        self.map_id_val = 1
+        self.spn.value = 1
+        self._update_map_info()
+
+        default = f"{self._iwidth}x{self._iheight}"
+        self.combo_box.selected_option = default
+        self.combo_box.current_state.selected_option_button.set_text(default)
+        self.map_fname_label.set_text(self._imap_fname)
+        self.on_resize(self._iwidth, self._iheight)
