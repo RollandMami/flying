@@ -1,5 +1,5 @@
 import pygame
-from ..widget import ProgressBar, AnimatedText
+from ..widget import ProgressBar, AnimatedText, Drone
 from .base_scene import BaseScene
 from typing import Callable, Any
 from configparser import ConfigParser
@@ -17,6 +17,7 @@ class SplashScene(BaseScene):
         super().__init__(master, bg, fg, on_finished, config)
         self.font = assets.BOPS_FONT(20)
         self.font_title = assets.DIRT_FONT(80)
+        self.cx, self.cy = self.master.get_rect().center
         self.prog_bg = pygame.Color(
             self.cfg.get("color-theme", "COLOR_BTN_DEFAULT"))
         self.prog_fg = pygame.Color(
@@ -25,6 +26,7 @@ class SplashScene(BaseScene):
         self._build_widget()
 
     def _build_widget(self) -> None:
+        self.drone = Drone(60, 60, self.bg, (0, 0), self.master)
         self.width = self.master.get_width()
         self.height = self.master.get_height()
         self.prog = ProgressBar(
@@ -46,10 +48,13 @@ class SplashScene(BaseScene):
         target.fill(self.bg)
         self.prog.draw()
         self.text.draw()
+        self.drone.draw()
 
     def update(self, dt: float) -> None:
         self.prog.update(dt)
         self.text.update(dt)
+        self.drone.update(dt)
+        self.drone.move((self.cx + 80, self.cy + 80))
         if self.prog.is_finished and self.text.is_finished \
            and not self._isfinished:
             self._isfinished = True

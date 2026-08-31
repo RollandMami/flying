@@ -9,6 +9,7 @@ from .components import (
     LevelShower,
     Spinbox,
     )
+from .drone import Drone
 
 __all__ = ["Button",
            "ProgressBar",
@@ -18,4 +19,4 @@ __all__ = ["Button",
            "RadioGroup",
            "Label",
            "LevelShower",
-           "Spinbox"]
+           "Spinbox", "Drone"]

@@ -57,18 +57,40 @@ class Icon:
 _SPRITESHEETS: dict[str, list[pygame.Surface]] = {}
 
 
+def splites(path: str, width: int, height: int) -> list[pygame.Surface]:
+    sheet = pygame.image.load(path).convert_alpha()
+    sheet_w, sheet_h = sheet.get_size()
+
+    cols = sheet_w // width
+    rows = sheet_h // height
+
+    if cols == 0 or rows == 0:
+        raise ValueError(
+            f"'{path}': image de taille {sheet_w}x{sheet_h} trop petite "
+            f"pour des tiles de {width}x{height} (cols={cols}, rows={rows})"
+        )
+
+    frames = []
+    for row in range(rows):
+        for col in range(cols):
+            rect = pygame.Rect(col * width, row * height, width, height)
+            frame = sheet.subsurface(rect)
+            frames.append(frame)
+    return frames
+
+
 def load_spritesheet(name: str,
                      t_width: int,
                      t_height: int,
                      ) -> list[pygame.Surface]:
     if name not in _SPRITESHEETS:
         path = os.path.join(bpath, name)
-        _SPRITESHEETS[name] = load_spritesheet(path, t_width, t_height)
+        _SPRITESHEETS[name] = splites(path, t_width, t_height)
     return _SPRITESHEETS[name]
 
 
 DRN_DEATH = partial(load_spritesheet, "drone_death.png", 120, 100)
-DRN_WALK = partial(load_spritesheet, "drone_WALK.png", 120, 100)
+DRN_WALK = partial(load_spritesheet, "drone_WALK.png", 120, 80)
 DRN_IDLE = partial(load_spritesheet, "drone_IDLE.png", 120, 80)
 DRN_SCAN = partial(load_spritesheet, "drone_scan.png", 120, 80)
 
