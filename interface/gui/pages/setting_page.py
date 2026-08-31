@@ -185,17 +185,20 @@ class SettingsScene(BaseScene):
         curr_level = self.radio_group.value
         curr_map_id = self.spn.value
 
-        if curr_level != self.stage or curr_map_id != self.map_id_val:
+        if curr_level != self.stage:
             self.stage = curr_level
-            self.map_id_val = curr_map_id
-
             self.map_files = self.p_m.get_files(self.stage)
             self.spn.max = len(self.map_files)
+            if curr_map_id > self.max_spin:
+                curr_map_id = 1
+                self.spn.value = 1
 
-            map_dict = self.p_m.get_map_file(self.stage, self.map_id_val)
-            if map_dict:
-                self.map_fname, self.map_fpath = next(iter(map_dict.items()))
-                self.map_fname_label.set_text(self.map_fname)
+            self.map_id_val = curr_map_id
+            self._update_map_info()
+
+        elif curr_map_id != self.map_id_val:
+            self.map_id_val = curr_map_id
+            self._update_map_info()
         self.map_fname_label.update(dt)
 
 
@@ -227,3 +230,13 @@ class SettingsScene(BaseScene):
         self.cfg.set("level", "map_id", str(self.spn.value))
         with open("config.ini", "w") as f:
             self.cfg.write(f)
+
+    def _update_map_info(self) -> None:
+        map_dict = self.p_m.get_map_file(self.stage, self.map_id_val)
+        if map_dict:
+            self.map_fname = list(map_dict.keys())[0]
+            self.map_fpath = map_dict[self.map_fname]
+            self.map_fname_label.set_text(self.map_fname)
+        else:
+            self.map_fname = "Aucun fichier"
+            self.map_fname_label.set_text(self.map_fname)
