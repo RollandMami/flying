@@ -8,7 +8,8 @@ from ..widget import (
     Button,
     AnimatedText,
     Label,
-    LevelShower)
+    LevelShower,
+    Drone)
 
 
 class HomeScene(BaseScene):
@@ -84,6 +85,7 @@ class HomeScene(BaseScene):
                                 self.fg, self.master, (self.width - 150, 40))
         self.lvl_show = LevelShower(self.font3, self.fg, self.bg,
                                     self.master, (20, 10), self.level)
+        self.drone = Drone(40, 40, self.bg, (cx - 20, cy - 50), self.master, 50)
 
     def _set_map_id(self, id: int) -> None:
         if id >= 1 and id <= 3:
@@ -101,6 +103,7 @@ class HomeScene(BaseScene):
         self.btn_exit.draw()
         self.lvl_map_id.draw()
         self.lvl_show.draw()
+        self.drone.draw()
 
     def update(self, dt: float) -> None:
         super().update(dt)
@@ -111,6 +114,7 @@ class HomeScene(BaseScene):
         self.btn_exit.update(dt)
         self.lvl_map_id.update(dt)
         self.lvl_show.update(dt)
+        self.drone.update(dt)
         curr_lvl = self.cfg.get("level", "stage").upper()
         curr_map_id = self.cfg.getint("level", "map_id")
         curr_map_id = f"MAP ID: {str(curr_map_id).zfill(2)}"

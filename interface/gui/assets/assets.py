@@ -33,6 +33,14 @@ class Icon:
         )
 
     @classmethod
+    def from_surface(cls, surface: pygame.Surface, path: str = "") -> "Icon":
+        icon = cls.__new__(cls)
+        icon.path = path
+        icon._original = surface
+        icon.surface = surface
+        return icon
+
+    @classmethod
     def _load(cls, path: str) -> pygame.Surface:
         if path not in cls._cache:
             cls._cache[path] = pygame.image.load(path).convert_alpha()
@@ -57,7 +65,7 @@ class Icon:
 _SPRITESHEETS: dict[str, list[pygame.Surface]] = {}
 
 
-def splites(path: str, width: int, height: int) -> list[pygame.Surface]:
+def splites(path: str, width: int, height: int) -> list[Icon]:
     sheet = pygame.image.load(path).convert_alpha()
     sheet_w, sheet_h = sheet.get_size()
 
@@ -74,15 +82,15 @@ def splites(path: str, width: int, height: int) -> list[pygame.Surface]:
     for row in range(rows):
         for col in range(cols):
             rect = pygame.Rect(col * width, row * height, width, height)
-            frame = sheet.subsurface(rect)
-            frames.append(frame)
+            frame = sheet.subsurface(rect).copy()
+            frames.append(Icon.from_surface(frame, path))
     return frames
 
 
 def load_spritesheet(name: str,
                      t_width: int,
                      t_height: int,
-                     ) -> list[pygame.Surface]:
+                     ) -> list[Icon]:
     if name not in _SPRITESHEETS:
         path = os.path.join(bpath, name)
         _SPRITESHEETS[name] = splites(path, t_width, t_height)
