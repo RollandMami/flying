@@ -5,6 +5,7 @@ from .base_scene import BaseScene
 from ..assets import assets
 from configparser import ConfigParser
 from functools import partial
+import pygame_gui as pgui
 
 
 class HelpScene(BaseScene):
@@ -16,6 +17,7 @@ class HelpScene(BaseScene):
                  on_finished: Callable[..., Any],
                  config: ConfigParser) -> None:
         super().__init__(master, bg, fg, on_finished, config)
+        self.width, self.height = master.get_width(), master.get_height()
         btn_bg = self.cfg.get("color-theme", "COLOR_BTN_DEFAULT")
         bttm_bg = self.cfg.get("color-theme", "COLOR_BTN_ACCENT")
         hover_bg = self.cfg.get("color-theme", "COLOR_BTN_HOVER")
@@ -25,9 +27,22 @@ class HelpScene(BaseScene):
         self.hover_bg = pygame.Color(hover_bg)
         self.font = assets.BOPS_FONT(15)
         self.font_title = assets.DIRT_FONT(80)
+        self.ui_manager = pgui.UIManager((self.width, self.height))
         self._build_widget()
 
     def _build_widget(self) -> None:
+        mon_paragraphe = (
+            "Bienvenue dans ce jeu ! Ceci est un long paragraphe de texte "
+            "affiché à l'aide de pygame_gui. Le texte s'ajuste automatiquement "
+            "à la largeur du cadre que vous avez défini. S'il y a trop de texte, "
+            "une barre de défilement apparaîtra sur le côté."
+        )
+
+        self.texte_box = pgui.elements.UITextBox(
+            html_text=mon_paragraphe,
+            relative_rect=pygame.Rect((130, 130), (self.width - 250, self.height - 250)),
+            manager=self.ui_manager
+        )
         _, cy = self.master.get_rect().center
         mx = self.master.get_rect().right
         bw, bh = 45, 40
@@ -59,15 +74,17 @@ class HelpScene(BaseScene):
         )
 
     def event_handler(self, event: pygame.event.Event) -> None:
-        pass
+        self.ui_manager.process_events(event)
 
     def update(self, dt: float) -> None:
         self.titre.update(dt)
         self.btn_home.update(dt)
         self.btn_setting.update(dt)
+        self.ui_manager.update(dt)
 
     def render(self, target: pygame.Surface) -> None:
         target.fill(self.bg)
         self.titre.draw()
         self.btn_home.draw()
         self.btn_setting.draw()
+        self.ui_manager.draw_ui(target)

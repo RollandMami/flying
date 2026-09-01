@@ -99,14 +99,15 @@ class Drone:
         )
 
     def move(self, speed: float, new_pos: tuple[int, int]) -> None:
-        x, y = self.position
-        new_x, new_y = x + speed, y + speed
-        if new_x <= new_pos[0]:
-            x = new_x
-        if new_y <= new_pos[1]:
-            y = new_y
-        self.position = (x, y)
-        self.set_position(x, y)
+        while self.position <= new_pos:
+            x, y = self.position
+            new_x, new_y = x + speed, y + speed
+            if new_x <= new_pos[0]:
+                x = new_x
+            if new_y <= new_pos[1]:
+                y = new_y
+            self.position = (x, y)
+            self.set_position(x, y)
 
     def update(self, dt: int) -> None:
         self.anim.idle(dt)

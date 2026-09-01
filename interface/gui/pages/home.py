@@ -39,6 +39,7 @@ class HomeScene(BaseScene):
         self.mrect = self.master.get_rect()
         self.width, self.height = self.mrect.width, self.mrect.height
         cx, cy = self.mrect.center
+        self.cx, self.cy = cx, cy
         bw, bh = 260, 45
         ipx, ipy = cx - (bw // 2), cy - (bh // 2)
         e = bh + 20
@@ -85,14 +86,17 @@ class HomeScene(BaseScene):
                                 self.fg, self.master, (self.width - 150, 40))
         self.lvl_show = LevelShower(self.font3, self.fg, self.bg,
                                     self.master, (20, 10), self.level)
-        self.drone = Drone(40, 40, self.bg, (cx - 20, cy - 50), self.master, 50)
+        self.drone = Drone(40, 40, self.bg, (cx - 20, cy - 50),
+                           self.master, 50)
 
     def _set_map_id(self, id: int) -> None:
         if id >= 1 and id <= 3:
             self.map_id = f"MAP ID: {str(id).zfill(2)}"
 
     def event_handler(self, evt: pygame.event.Event) -> None:
-        pass
+        if evt.type == pygame.KEYDOWN:
+            if evt.key == pygame.K_SPACE:
+                self.drone.move(10, (self.cx + 100, self.cy + 50))
 
     def render(self, target: pygame.Surface) -> None:
         target.fill(self.bg)
