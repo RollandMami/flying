@@ -10,6 +10,7 @@ from .pages import (
     HomeScene,
     SettingsScene,
     SplashScene)
+from infrastructure import TxtParser
 
 
 class PathFinder(Protocol):
@@ -22,7 +23,8 @@ class SceneManager:
     def __init__(self,
                  title: str,
                  config: ConfigParser,
-                 path_manager: PathFinder) -> None:
+                 path_manager: PathFinder,
+                 t_parser: TxtParser) -> None:
         pygame.init()
         self.p_m = path_manager
         self.cfg = config
@@ -51,7 +53,8 @@ class SceneManager:
                 self.switch_to, self.cfg, self.p_m),
             "GAME": GameScene(
                 self.screen, self.bg, txt_mute,
-                self.switch_to, self.cfg
+                self.switch_to, self.cfg, self.p_m,
+                t_parser
                 ),
             "HELP": HelpScene(
                 self.screen, self.bg, txt_mute,

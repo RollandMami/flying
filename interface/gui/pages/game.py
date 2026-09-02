@@ -1,13 +1,21 @@
 import pygame
+from pathlib import Path
+from typing import Protocol
 from typing import Callable, Any
-from .base_scene import BaseScene
 from configparser import ConfigParser
 from functools import partial
+from .base_scene import BaseScene
 from ..assets import assets
 from ..widget import (
     Button,
     AnimatedText,
     Grid)
+from infrastructure import TxtParser
+
+
+class PathFinder(Protocol):
+    def get_map_file(self, level: str, id: int) -> dict[str, Path]:
+        ...
 
 
 class GameScene(BaseScene):
@@ -17,7 +25,9 @@ class GameScene(BaseScene):
                  bg: pygame.Color,
                  fg: pygame.Color,
                  on_finished: Callable[..., Any],
-                 config: ConfigParser) -> None:
+                 config: ConfigParser,
+                 p_m: PathFinder,
+                 t_parser: TxtParser) -> None:
         super().__init__(master, bg, fg, on_finished, config)
         btn_bg = self.cfg.get("color-theme", "COLOR_BTN_DEFAULT")
         bttm_bg = self.cfg.get("color-theme", "COLOR_BTN_ACCENT")
@@ -28,6 +38,9 @@ class GameScene(BaseScene):
         self.hover_bg = pygame.Color(hover_bg)
         self.font = assets.BOPS_FONT(15)
         self.font_title = assets.DIRT_FONT(80)
+        self.t_parser = t_parser
+        self.p_m = p_m
+
         self._build_widget()
 
     def _build_widget(self):
@@ -59,6 +72,11 @@ class GameScene(BaseScene):
                     "R E A D Y", self.fg, 0, 0
         )
         self.grid = Grid(None, self.bg, self.fg, self.master, (80, 80), 40)
+        self.level = self.cfg.get("level", "stage")
+        self.map_id = self.cfg.getint("level", "map_id")
+        self.map_file = self.p_m.get_map_file(self.level, self.map_id)
+        self.map_data = self.t_parser.load(list(self.map_file.values())[0])
+        print(str(self.map_data))
 
     def event_handler(self, event: pygame.event.Event) -> None:
         pass
