@@ -82,6 +82,7 @@ class Drone:
         self.master = master
         self.width = width
         self.height = height
+        self.target_pos = None
 
         self.rect = pygame.Rect((self.position), (self.width, self.height))
         self.anim = self.Animate(self.rect, sprite_size)
@@ -98,19 +99,37 @@ class Drone:
             center=self.rect.center
         )
 
-    def move(self, speed: float, new_pos: tuple[int, int]) -> None:
-        while self.position <= new_pos:
-            x, y = self.position
-            new_x, new_y = x + speed, y + speed
-            if new_x <= new_pos[0]:
-                x = new_x
-            if new_y <= new_pos[1]:
-                y = new_y
-            self.position = (x, y)
-            self.set_position(x, y)
+    def move(self, new_pos: tuple[int, int]) -> None:
+        self.target_pos = new_pos
 
-    def update(self, dt: int) -> None:
+    def update(self, dt: int, speed: float) -> None:
         self.anim.idle(dt)
+        if self.target_pos is None:
+            return
+        x, y = self.position
+        target_x, target_y = self.target_pos
+        dx = target_x - x
+        dy = target_y - y
+        distance = (dx ** 2 + dy ** 2) ** 0.5
+
+        if distance == 0:
+            self.target_pos = None
+            return
+
+        movement = speed * dt
+
+        if distance <= movement:
+            x = target_x
+            y = target_y
+        else:
+            x += dx / distance * movement
+            y += dy / distance * movement
+
+        self.position = (x, y)
+        self.set_position(x, y)
+
+        if self.position == self.target_pos:
+            self.target_pos = None
 
     def event_handler(self, event: pygame.event.Event) -> None:
         pass

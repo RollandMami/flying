@@ -96,7 +96,7 @@ class HomeScene(BaseScene):
     def event_handler(self, evt: pygame.event.Event) -> None:
         if evt.type == pygame.KEYDOWN:
             if evt.key == pygame.K_SPACE:
-                self.drone.move(10, (self.cx + 100, self.cy + 50))
+                self.drone.move((self.cx + 100, self.cy + 50))
 
     def render(self, target: pygame.Surface) -> None:
         target.fill(self.bg)
@@ -118,7 +118,7 @@ class HomeScene(BaseScene):
         self.btn_exit.update(dt)
         self.lvl_map_id.update(dt)
         self.lvl_show.update(dt)
-        self.drone.update(dt)
+        self.drone.update(dt, 30)
         curr_lvl = self.cfg.get("level", "stage").upper()
         curr_map_id = self.cfg.getint("level", "map_id")
         curr_map_id = f"MAP ID: {str(curr_map_id).zfill(2)}"

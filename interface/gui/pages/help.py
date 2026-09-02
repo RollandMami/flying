@@ -1,11 +1,15 @@
+
+import os
 import pygame
-from ..widget import Button, AnimatedText
 from typing import Callable, Any
-from .base_scene import BaseScene
-from ..assets import assets
 from configparser import ConfigParser
+from .base_scene import BaseScene
+from ..widget import Button, AnimatedText
+from ..assets import assets
 from functools import partial
+import warnings
 import pygame_gui as pgui
+warnings.filterwarnings("ignore", category=UserWarning)
 
 
 class HelpScene(BaseScene):
@@ -31,16 +35,14 @@ class HelpScene(BaseScene):
         self._build_widget()
 
     def _build_widget(self) -> None:
-        mon_paragraphe = (
-            "Bienvenue dans ce jeu ! Ceci est un long paragraphe de texte "
-            "affiché à l'aide de pygame_gui. Le texte s'ajuste automatiquement "
-            "à la largeur du cadre que vous avez défini. S'il y a trop de texte, "
-            "une barre de défilement apparaîtra sur le côté."
-        )
+        base = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(base, "help.html"), "r") as f:
+            mon_paragraphe = f.read()
 
         self.texte_box = pgui.elements.UITextBox(
             html_text=mon_paragraphe,
-            relative_rect=pygame.Rect((130, 130), (self.width - 250, self.height - 250)),
+            relative_rect=pygame.Rect((130, 130),
+                                      (self.width - 250, self.height - 250)),
             manager=self.ui_manager
         )
         _, cy = self.master.get_rect().center
