@@ -10,6 +10,8 @@ from .components import (
     Spinbox,
     )
 from .drone import Drone
+from .map import MapManager
+
 
 __all__ = ["Button",
            "ProgressBar",
@@ -19,4 +21,4 @@ __all__ = ["Button",
            "RadioGroup",
            "Label",
            "LevelShower",
-           "Spinbox", "Drone"]
+           "Spinbox", "Drone", "MapManager"]

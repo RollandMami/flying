@@ -74,9 +74,9 @@ class GameScene(BaseScene):
         self.grid = Grid(None, self.bg, self.fg, self.master, (80, 80), 40)
         self.level = self.cfg.get("level", "stage")
         self.map_id = self.cfg.getint("level", "map_id")
-        self.map_file = self.p_m.get_map_file(self.level, self.map_id)
-        self.map_data = self.t_parser.load(list(self.map_file.values())[0])
-        print(str(self.map_data))
+        map_dict = self.p_m.get_map_file(self.level, self.map_id)
+        [value] = list(map_dict.values())
+        self.map_path = value
 
     def event_handler(self, event: pygame.event.Event) -> None:
         pass

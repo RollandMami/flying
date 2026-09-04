@@ -1,0 +1,3 @@
+class MapManager:
+    def __init__(self):
+        ...
