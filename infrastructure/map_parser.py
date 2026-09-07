@@ -39,7 +39,7 @@ class TxtParser(BaseParser):
         }
 
     def set_path(self, path: str) -> None:
-        if not path or len(path) <= 2:
+        if not path or len(str(path)) <= 2:
             raise ValueError(f"Path errror : {path}")
         self._path = path
 
