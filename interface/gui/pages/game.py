@@ -9,8 +9,9 @@ from ..assets import assets
 from ..widget import (
     Button,
     AnimatedText,
-    Grid)
+    Grid, Landing)
 from infrastructure import TxtParser
+from apps import apps
 
 
 class PathFinder(Protocol):
@@ -77,6 +78,8 @@ class GameScene(BaseScene):
         map_dict = self.p_m.get_map_file(self.level, self.map_id)
         [value] = list(map_dict.values())
         self.map_path = value
+        self.map_data_model = apps.extact_model_from_map(self.map_path)
+        print(self.map_data_model.model_dump_json())
 
     def event_handler(self, event: pygame.event.Event) -> None:
         pass

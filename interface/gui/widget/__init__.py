@@ -11,6 +11,7 @@ from .components import (
     )
 from .drone import Drone
 from .map import MapManager
+from .landing import Landing
 
 
 __all__ = ["Button",
@@ -21,4 +22,4 @@ __all__ = ["Button",
            "RadioGroup",
            "Label",
            "LevelShower",
-           "Spinbox", "Drone", "MapManager"]
+           "Spinbox", "Drone", "MapManager", "Landing"]
