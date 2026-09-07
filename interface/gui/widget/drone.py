@@ -102,10 +102,21 @@ class Drone:
     def move(self, new_pos: tuple[int, int]) -> None:
         self.target_pos = new_pos
 
+    def set_anim(self, dt: float, anim: str | None) -> None:
+        if not anim or anim == "idle":
+            self.anim.idle(dt)
+        elif anim == "walk":
+            self.anim.walk(dt)
+        elif anim == "scan":
+            self.anim.scan(dt)
+        elif anim == "death":
+            self.anim.death(dt)
+
     def update(self, dt: int, speed: float) -> None:
-        self.anim.idle(dt)
         if self.target_pos is None:
+            self.set_anim(dt, "idle")
             return
+
         x, y = self.position
         target_x, target_y = self.target_pos
         dx = target_x - x
@@ -114,8 +125,10 @@ class Drone:
 
         if distance == 0:
             self.target_pos = None
+            self.set_anim(dt, "idle")
             return
 
+        self.set_anim(dt, "walk")
         movement = speed * dt
 
         if distance <= movement:

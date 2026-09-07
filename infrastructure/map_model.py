@@ -64,8 +64,12 @@ class Meta(BaseModel):
         return self.zone.cost
 
     @property
-    def is_traversable(self) -> bool:
+    def is_crossable(self) -> bool:
         return self.zone.is_crossable
+
+    @property
+    def is_priority(self) -> bool:
+        return self.zone.is_priority
 
 
 class Hub(BaseModel):
@@ -83,6 +87,30 @@ class Hub(BaseModel):
         if "-" in v:
             raise ValueError(f"Hub name must not contain '-': '{v}'")
         return v
+
+    @property
+    def color(self) -> str | None:
+        return self.meta.color
+
+    @property
+    def max_drone(self) -> int:
+        return self.meta.max_drones
+
+    @property
+    def cost(self) -> int:
+        return self.meta.cost
+
+    @property
+    def is_crossable(self) -> int:
+        return self.meta.is_crossable
+
+    @property
+    def is_priority(self) -> int:
+        return self.meta.is_priority
+
+    @property
+    def description(self) -> str:
+        return self.meta.zone.value.upper()
 
 
 class Con(BaseModel):
