@@ -1,3 +1,59 @@
+import pygame
+from infrastructure import MapModel
+from .landing import Landing
+from .components import Grid
+from typing import Any
+
+
 class MapManager:
-    def __init__(self):
-        ...
+    def __init__(self,
+                 font: pygame.font.Font,
+                 bg: pygame.Color,
+                 fg: pygame.Color,
+                 master: pygame.Surface,
+                 data: MapModel):
+        self.bg = bg
+        self.fg = fg
+        self.font = font
+        self.master = master
+        self.map_data_model = data
+        start = self.map_data_model.start_hub
+        self.offset_x, self.offset_y = self._compute_offset()
+        self.grid = Grid(None, self.bg, self.fg, self.master, (80, 80), 40)
+        self.start_hub = Landing(self.font, self.bg, self.fg,
+                                 self.master, "red", start, 30,
+                                 offset=(self.offset_x, self.offset_y))
+
+    def event_handler(self, event: pygame.event.Event) -> None:
+        pass
+
+    def update(self, dt: float) -> None:
+        pass
+
+    def draw(self) -> None:
+        self.grid.draw()
+        self.start_hub.draw()
+
+    @property
+    def _all_hubs(self) -> list[Any]:
+        return [
+            self.map_data_model.start_hub,
+            self.map_data_model.end_hub,
+            *self.map_data_model.hubs
+        ]
+
+    @property
+    def _bounds(self) -> tuple[int, int, int, int]:
+        xs = [hub.x for hub in self._all_hubs]
+        ys = [hub.y for hub in self._all_hubs]
+        return min(xs), max(xs), min(ys), max(ys)
+
+    @property
+    def _center(self) -> tuple[int, int]:
+        minx, maxx, miny, maxy = self._bounds
+        return (maxx - minx) // 2, (maxy - miny) // 2
+
+    def _compute_offset(self) -> None:
+        mcx, mcy = self.master.get_rect().center
+        bcx, bcy = self._center
+        return mcx - bcx, mcy - bcy

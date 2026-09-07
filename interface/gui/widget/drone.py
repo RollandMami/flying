@@ -13,6 +13,7 @@ class Icons(Protocol):
 
 
 class Drone:
+    _next_id = 1
 
     class Animate:
 
@@ -75,14 +76,18 @@ class Drone:
                  bg: pygame.Color,
                  position: tuple[int, int],
                  master: pygame.Surface,
-                 sprite_size: int | tuple[int, int] | None = None
+                 sprite_size: int | tuple[int, int] | None = None,
+                 l_name: str = "Zone Neutre"
                  ) -> None:
         self.position = position
         self.bg = bg
+        self.land_name = l_name
         self.master = master
         self.width = width
         self.height = height
         self.target_pos = None
+        self._id = Drone._next_id
+        Drone._next_id += 1
 
         self.rect = pygame.Rect((self.position), (self.width, self.height))
         self.anim = self.Animate(self.rect, sprite_size)

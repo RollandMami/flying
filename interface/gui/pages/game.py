@@ -8,8 +8,7 @@ from .base_scene import BaseScene
 from ..assets import assets
 from ..widget import (
     Button,
-    AnimatedText,
-    Grid, Landing)
+    MapManager)
 from infrastructure import TxtParser
 from apps import apps
 
@@ -38,6 +37,7 @@ class GameScene(BaseScene):
         self.bttm_bg = pygame.Color(bttm_bg)
         self.hover_bg = pygame.Color(hover_bg)
         self.font = assets.BOPS_FONT(15)
+        self.font2 = assets.BOPS_FONT(12)
         self.font_title = assets.DIRT_FONT(80)
         self.t_parser = t_parser
         self.p_m = p_m
@@ -68,11 +68,7 @@ class GameScene(BaseScene):
                                icon_gap=0,
                                icon=assets.SETTING_ICON(30)
                                )
-        self.titre = AnimatedText(
-                    self.master, self.font_title,
-                    "R E A D Y", self.fg, 0, 0
-        )
-        self.grid = Grid(None, self.bg, self.fg, self.master, (80, 80), 40)
+
         self.level = self.cfg.get("level", "stage")
         self.map_id = self.cfg.getint("level", "map_id")
         map_dict = self.p_m.get_map_file(self.level, self.map_id)
@@ -80,18 +76,18 @@ class GameScene(BaseScene):
         self.map_path = value
         self.map_data_model = apps.extact_model_from_map(self.map_path)
         print(self.map_data_model.model_dump_json())
+        self.map_manager = MapManager(self.font2, self.bg, self.fg,
+                                      self.master, self.map_data_model)
 
     def event_handler(self, event: pygame.event.Event) -> None:
         pass
 
     def update(self, dt: float) -> None:
-        self.titre.update(dt)
         self.btn_home.update(dt)
         self.btn_setting.update(dt)
 
     def render(self, target: pygame.Surface) -> None:
         target.fill(self.bg)
-        self.grid.draw()
-        self.titre.draw()
         self.btn_home.draw()
         self.btn_setting.draw()
+        self.map_manager.draw()

@@ -166,6 +166,11 @@ class MapModel(BaseModel):
                 f"end_hub '{self.end_hub.name}' cannot be blocked")
         return self
 
+    @model_validator(mode="after")
+    def apply_max_capacity(self) -> "MapModel":
+        self.start_hub.meta.max_drones = self.nb_drones
+        self.end_hub.meta.max_drones = self.nb_drones
+
     def get_hub(self, name: str) -> Hub:
         if self.start_hub.name == name:
             return self.start_hub

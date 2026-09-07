@@ -15,20 +15,22 @@ class Landing:
                  master: pygame.Surface,
                  default: pygame.Color,
                  hub: mm.Hub,
-                 radius: int = 30) -> None:
+                 radius: int = 30,
+                 offset: tuple[int, int] = (0, 0)) -> None:
+        ox, oy = offset
         self.bb = bg
-        self.x = hub.x
-        self.y = hub.y
+        self.x = hub.x + ox
+        self.y = hub.y + oy
         self.r = radius
         self.master = master
         self.cost = hub.cost
-        self.name = hub.name
+        self.name = hub.name.upper()
         self.default_color = default
         self.max_capacity = hub.max_drone
         self.description = hub.description
         self.is_priority = hub.is_priority
         self.is_crossable = hub.is_crossable
-        self.pos = pygame.Vector2(hub.x, hub.y)
+        self.pos = pygame.Vector2(self.x, self.y)
         self.color = self._resolve_color(hub.color)
         self.drones: list[Drone] = []
         self.rect = pygame.Rect(self.x - self.r,
@@ -37,9 +39,10 @@ class Landing:
         x, y = self.pos
         base_lbl = partial(Label, font=font, bg_color=bg,
                            font_color=fg, master=master)
-        self.l_name = base_lbl(self.name, position=(x, y - 30))
-        self.l_description = base_lbl(self.description, position=(x, y - 20))
-        self.l_capacitor = base_lbl(self._capacity_text(), (x, y - 10))
+        self.l_name = base_lbl(self.name, position=(x, y - 60))
+        self.l_description = base_lbl(self.description, position=(x, y - 45))
+        self.l_capacitor = base_lbl(
+            self._capacity_text(), position=(x, y - 30))
 
     def _capacity_text(self) -> str:
         return f"DRN: {len(self.drones):02d}/{self.max_capacity:02d}"
