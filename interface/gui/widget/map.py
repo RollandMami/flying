@@ -11,18 +11,24 @@ class MapManager:
                  bg: pygame.Color,
                  fg: pygame.Color,
                  master: pygame.Surface,
-                 data: MapModel):
+                 data: MapModel,
+                 margin: int = 160):
         self.bg = bg
         self.fg = fg
         self.font = font
         self.master = master
+        self.margin = margin
         self.map_data_model = data
-        start = self.map_data_model.start_hub
         self.offset_x, self.offset_y = self._compute_offset()
-        self.grid = Grid(None, self.bg, self.fg, self.master, (80, 80), 40)
-        self.start_hub = Landing(self.font, self.bg, self.fg,
-                                 self.master, "red", start, 30,
-                                 offset=(self.offset_x, self.offset_y))
+        self.grid = Grid(None, self.bg, self.fg,
+                         self.master, (margin, margin), 40)
+        self.lands = [
+            Landing(self.font, self.bg, self.fg,
+                    self.master, "red", land, 30,
+                    offset=(self.offset_x, self.offset_y),
+                    margin=self.margin)
+            for land in self._all_hubs
+            ]
 
     def event_handler(self, event: pygame.event.Event) -> None:
         pass
@@ -32,7 +38,8 @@ class MapManager:
 
     def draw(self) -> None:
         self.grid.draw()
-        self.start_hub.draw()
+        for land in self.lands:
+            land.draw()
 
     @property
     def _all_hubs(self) -> list[Any]:
@@ -56,4 +63,7 @@ class MapManager:
     def _compute_offset(self) -> None:
         mcx, mcy = self.master.get_rect().center
         bcx, bcy = self._center
-        return mcx - bcx, mcy - bcy
+
+        scaled_cx = bcx * self.margin
+        scaled_cy = bcy * self.margin
+        return mcx - scaled_cx, mcy - scaled_cy

@@ -16,11 +16,12 @@ class Landing:
                  default: pygame.Color,
                  hub: mm.Hub,
                  radius: int = 30,
-                 offset: tuple[int, int] = (0, 0)) -> None:
+                 offset: tuple[int, int] = (0, 0),
+                 margin: int = 1) -> None:
         ox, oy = offset
         self.bb = bg
-        self.x = hub.x + ox
-        self.y = hub.y + oy
+        self.x = hub.x * margin + ox
+        self.y = hub.y * margin + oy
         self.r = radius
         self.master = master
         self.cost = hub.cost
@@ -38,11 +39,11 @@ class Landing:
                                 2 * self.r, 2 * self.r)
         x, y = self.pos
         base_lbl = partial(Label, font=font, bg_color=bg,
-                           font_color=fg, master=master)
-        self.l_name = base_lbl(self.name, position=(x, y - 60))
-        self.l_description = base_lbl(self.description, position=(x, y - 45))
+                           font_color=fg, master=master, anchor="center")
+        self.l_name = base_lbl(self.name, position=(x, y - 70))
+        self.l_description = base_lbl(self.description, position=(x, y - 55))
         self.l_capacitor = base_lbl(
-            self._capacity_text(), position=(x, y - 30))
+            self._capacity_text(), position=(x, y - 40))
 
     def _capacity_text(self) -> str:
         return f"DRN: {len(self.drones):02d}/{self.max_capacity:02d}"
