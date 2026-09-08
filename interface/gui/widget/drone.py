@@ -2,6 +2,7 @@ import pygame
 from ..assets import assets
 import itertools
 from typing import Protocol
+from .components import Label
 
 
 class Icons(Protocol):
@@ -13,7 +14,7 @@ class Icons(Protocol):
 
 
 class Drone:
-    _next_id = 1
+    _next_id = 0
 
     class Animate:
 
@@ -77,10 +78,11 @@ class Drone:
                  position: tuple[int, int],
                  master: pygame.Surface,
                  sprite_size: int | tuple[int, int] | None = None,
-                 l_name: str = "Zone Neutre"
-                 ) -> None:
+                 l_name: str = "Zone Neutre",
+                 show_id: bool = False) -> None:
         self.position = position
         self.bg = bg
+        self.font = assets.BOPS_FONT(10)
         self.land_name = l_name
         self.master = master
         self.width = width
@@ -88,18 +90,25 @@ class Drone:
         self.target_pos = None
         self._id = Drone._next_id
         Drone._next_id += 1
+        self.show_id = show_id
 
-        self.rect = pygame.Rect((self.position), (self.width, self.height))
+        self.rect = pygame.Rect((0, 0), (self.width, self.height))
+        self.rect.center = self.position
         self.anim = self.Animate(self.rect, sprite_size)
+        self.id_lbl = Label(f"{self._id:02d}", self.font,
+                            self.bg, "white", self.master, self.position,
+                            anchor="center")
 
     def draw(self) -> None:
-        pygame.draw.rect(self.master, self.bg, self.rect)
+        # pygame.draw.rect(self.master, self.bg, self.rect)
         self.anim.actual_img.draw(
             self.master,
             self.anim.actual_img_rect.topleft)
+        if self.show_id:
+            self.id_lbl.draw()
 
     def set_position(self, x: float, y: float) -> None:
-        self.rect.x, self.rect.y = x, y
+        self.rect.center = (x, y)
         self.anim.actual_img_rect = self.anim.actual_img.get_rect(
             center=self.rect.center
         )
@@ -145,6 +154,7 @@ class Drone:
 
         self.position = (x, y)
         self.set_position(x, y)
+        self.id_lbl.set_pos((x, y))
 
         if self.position == self.target_pos:
             self.target_pos = None

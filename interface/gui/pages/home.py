@@ -86,7 +86,7 @@ class HomeScene(BaseScene):
                                 self.fg, self.master, (self.width - 150, 40))
         self.lvl_show = LevelShower(self.font3, self.fg, self.bg,
                                     self.master, (20, 10), self.level)
-        self.drone = Drone(40, 40, self.bg, (cx - 20, cy - 50),
+        self.drone = Drone(40, 40, self.bg, (cx, cy),
                            self.master, 50)
 
     def _set_map_id(self, id: int) -> None:

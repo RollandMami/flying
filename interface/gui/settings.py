@@ -3,7 +3,12 @@ import colorsys
 
 def rainbow() -> list[tuple[int, int, int]]:
     return [
-        colorsys.hls_to_rgb(((index % 7) * (360.0 / 7) / 360.0, 0.5, 1.0))
+        tuple(
+            round(c * 255)
+            for c in colorsys.hls_to_rgb(
+                (index % 7) * (360.0 / 7) / 360.0, 0.5, 1.0
+            )
+        )
         for index in range(7)
     ]
 

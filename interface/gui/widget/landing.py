@@ -53,7 +53,7 @@ class Landing:
         if not col:
             return self.default_color
         elif col == "rainbow":
-            return rainbow()[0]
+            return pygame.Color(*rainbow()[1])
         return pygame.Color(col)
 
     def can_land(self) -> bool:
@@ -68,6 +68,7 @@ class Landing:
         if not self.drones:
             raise ValueError("Lands don't have drones")
         drn = self.drones.pop()
+        _to.receive(drn)
         drn.move(_to.pos)
         self.l_capacitor.set_text(self._capacity_text())
 

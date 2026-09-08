@@ -3,6 +3,7 @@ from infrastructure import MapModel
 from .landing import Landing
 from .components import Grid
 from typing import Any
+from .drone import Drone
 
 
 class MapManager:
@@ -21,25 +22,42 @@ class MapManager:
         self.map_data_model = data
         self.offset_x, self.offset_y = self._compute_offset()
         self.grid = Grid(None, self.bg, self.fg,
-                         self.master, (margin, margin), 40)
-        self.lands = [
-            Landing(self.font, self.bg, self.fg,
-                    self.master, "red", land, 30,
-                    offset=(self.offset_x, self.offset_y),
-                    margin=self.margin)
-            for land in self._all_hubs
-            ]
+                         self.master, (margin, margin), 40,
+                         origin=(
+                             int(self.offset_x),
+                             int(self.offset_y)))
+        self.lands = {
+            hub.name: Landing(self.font, self.bg, self.fg,
+                              self.master, "red", hub, 30,
+                              offset=(self.offset_x, self.offset_y),
+                              margin=self.margin)
+            for hub in self._all_hubs
+            }
+        start = self.map_data_model.start_hub
+        sx = start.x * self.margin + self.offset_x
+        sy = start.y * self.margin + self.offset_y
+        self.drones = [
+            Drone(40, 40, self.bg, (sx, sy), self.master, 40, show_id=True)
+            for _ in range(self.map_data_model.nb_drones)
+        ]
+        for drone in self.drones:
+            self.lands["start"].receive(drone)
 
     def event_handler(self, event: pygame.event.Event) -> None:
-        pass
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                self.lands["start"].send(self.lands["waypoint1"])
 
     def update(self, dt: float) -> None:
-        pass
+        for drone in self.drones:
+            drone.update(dt, 30)
 
     def draw(self) -> None:
         self.grid.draw()
-        for land in self.lands:
+        for land in self.lands.values():
             land.draw()
+        for drone in self.drones:
+            drone.draw()
 
     @property
     def _all_hubs(self) -> list[Any]:
@@ -56,9 +74,9 @@ class MapManager:
         return min(xs), max(xs), min(ys), max(ys)
 
     @property
-    def _center(self) -> tuple[int, int]:
+    def _center(self) -> tuple[float, float]:
         minx, maxx, miny, maxy = self._bounds
-        return (maxx - minx) // 2, (maxy - miny) // 2
+        return (maxx + minx) / 2, (maxy + miny) / 2
 
     def _compute_offset(self) -> None:
         mcx, mcy = self.master.get_rect().center

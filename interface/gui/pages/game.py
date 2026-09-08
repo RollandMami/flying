@@ -80,11 +80,12 @@ class GameScene(BaseScene):
                                       self.master, self.map_data_model)
 
     def event_handler(self, event: pygame.event.Event) -> None:
-        pass
+        self.map_manager.event_handler(event)
 
     def update(self, dt: float) -> None:
         self.btn_home.update(dt)
         self.btn_setting.update(dt)
+        self.map_manager.update(dt)
 
     def render(self, target: pygame.Surface) -> None:
         target.fill(self.bg)
