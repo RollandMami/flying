@@ -96,7 +96,8 @@ class Drone:
         self.rect.center = self.position
         self.anim = self.Animate(self.rect, sprite_size)
         self.id_lbl = Label(f"{self._id:02d}", self.font,
-                            self.bg, "white", self.master, self.position,
+                            self.bg, "white", self.master,
+                            self._label_pos(*self.position),
                             anchor="center")
 
     def draw(self) -> None:
@@ -107,11 +108,19 @@ class Drone:
         if self.show_id:
             self.id_lbl.draw()
 
+    @classmethod
+    def reset_ids(cls) -> None:
+        cls._next_id = 1
+
+    def _label_pos(self, x: float, y: float) -> tuple[float, float]:
+        return (x, y - self.height // 2)
+
     def set_position(self, x: float, y: float) -> None:
         self.rect.center = (x, y)
         self.anim.actual_img_rect = self.anim.actual_img.get_rect(
             center=self.rect.center
         )
+        self.id_lbl.set_pos(self._label_pos(x, y))
 
     def move(self, new_pos: tuple[int, int]) -> None:
         self.target_pos = new_pos
@@ -154,7 +163,6 @@ class Drone:
 
         self.position = (x, y)
         self.set_position(x, y)
-        self.id_lbl.set_pos((x, y))
 
         if self.position == self.target_pos:
             self.target_pos = None

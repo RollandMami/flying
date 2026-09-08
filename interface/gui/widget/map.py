@@ -36,6 +36,7 @@ class MapManager:
         start = self.map_data_model.start_hub
         sx = start.x * self.margin + self.offset_x
         sy = start.y * self.margin + self.offset_y
+        Drone.reset_ids()
         self.drones = [
             Drone(40, 40, self.bg, (sx, sy), self.master, 40, show_id=True)
             for _ in range(self.map_data_model.nb_drones)
@@ -50,7 +51,7 @@ class MapManager:
 
     def update(self, dt: float) -> None:
         for drone in self.drones:
-            drone.update(dt, 30)
+            drone.update(dt, speed=50)
 
     def draw(self) -> None:
         self.grid.draw()

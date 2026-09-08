@@ -74,8 +74,8 @@ class Meta(BaseModel):
 
 class Hub(BaseModel):
     name: str
-    x: int = Field(ge=-20, le=20)
-    y: int = Field(ge=-20, le=20)
+    x: int = Field(ge=-30, le=30)
+    y: int = Field(ge=-30, le=30)
     meta: Meta = Field(default_factory=Meta)
 
     @field_validator("name")

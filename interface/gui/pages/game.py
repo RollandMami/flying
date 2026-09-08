@@ -69,15 +69,11 @@ class GameScene(BaseScene):
                                icon=assets.SETTING_ICON(30)
                                )
 
-        self.level = self.cfg.get("level", "stage")
-        self.map_id = self.cfg.getint("level", "map_id")
-        map_dict = self.p_m.get_map_file(self.level, self.map_id)
-        [value] = list(map_dict.values())
-        self.map_path = value
-        self.map_data_model = apps.extact_model_from_map(self.map_path)
-        print(self.map_data_model.model_dump_json())
-        self.map_manager = MapManager(self.font2, self.bg, self.fg,
-                                      self.master, self.map_data_model)
+        self.level = None
+        self.map_id = None
+        init_level = self.cfg.get("level", "stage")
+        init_map_id = self.cfg.getint("level", "map_id")
+        self.reload_map(init_level, init_map_id)
 
     def event_handler(self, event: pygame.event.Event) -> None:
         self.map_manager.event_handler(event)
@@ -85,6 +81,12 @@ class GameScene(BaseScene):
     def update(self, dt: float) -> None:
         self.btn_home.update(dt)
         self.btn_setting.update(dt)
+
+        new_level = self.cfg.get("level", "stage")
+        new_map_id = self.cfg.getint("level", "map_id")
+        if (new_level, new_map_id) != (self.level, self.map_id):
+            self.reload_map(new_level, new_map_id)
+
         self.map_manager.update(dt)
 
     def render(self, target: pygame.Surface) -> None:
@@ -92,3 +94,13 @@ class GameScene(BaseScene):
         self.btn_home.draw()
         self.btn_setting.draw()
         self.map_manager.draw()
+
+    def reload_map(self, level: str, map_id: int):
+        self.level = level
+        self.map_id = map_id
+        map_dict = self.p_m.get_map_file(self.level, self.map_id)
+        [value] = list(map_dict.values())
+        self.map_path = value
+        self.map_data_model = apps.extact_model_from_map(self.map_path)
+        self.map_manager = MapManager(self.font2, self.bg, self.fg,
+                                      self.master, self.map_data_model)

@@ -1,4 +1,6 @@
 # from typing import Protocol, Any
+from collections import deque
+
 import pygame
 from infrastructure import map_model as mm
 from ..settings import rainbow
@@ -33,7 +35,7 @@ class Landing:
         self.is_crossable = hub.is_crossable
         self.pos = pygame.Vector2(self.x, self.y)
         self.color = self._resolve_color(hub.color)
-        self.drones: list[Drone] = []
+        self.drones: deque[Drone] = deque()
         self.rect = pygame.Rect(self.x - self.r,
                                 self.y - self.r,
                                 2 * self.r, 2 * self.r)
@@ -67,10 +69,13 @@ class Landing:
     def send(self, _to: "Landing") -> None:
         if not self.drones:
             raise ValueError("Lands don't have drones")
-        drn = self.drones.pop()
-        _to.receive(drn)
-        drn.move(_to.pos)
-        self.l_capacitor.set_text(self._capacity_text())
+        if _to.can_land():
+            drn = self.drones.popleft()
+            _to.receive(drn)
+            drn.move(_to.pos)
+            self.l_capacitor.set_text(self._capacity_text())
+        else:
+            print(_to.name, "cant land any more drone")
 
     def draw(self) -> None:
         pygame.draw.circle(self.master, self.color, self.rect.center, self.r)
