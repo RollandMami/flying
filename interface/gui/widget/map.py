@@ -1,7 +1,7 @@
 import pygame
 from infrastructure import MapModel
 from .landing import Landing
-from .components import Grid
+from .components import Grid, Label
 from typing import Any
 from .drone import Drone
 
@@ -13,7 +13,7 @@ class MapManager:
                  fg: pygame.Color,
                  master: pygame.Surface,
                  data: MapModel,
-                 margin: int = 160):
+                 margin: int = 200):
         self.bg = bg
         self.fg = fg
         self.font = font
@@ -28,9 +28,10 @@ class MapManager:
                              int(self.offset_y)))
         self.lands = {
             hub.name: Landing(self.font, self.bg, self.fg,
-                              self.master, "red", hub, 30,
+                              self.master, "red", hub,
+                              data.connections, 30,
                               offset=(self.offset_x, self.offset_y),
-                              margin=self.margin)
+                              margin=self.margin, )
             for hub in self._all_hubs
             }
         start = self.map_data_model.start_hub
@@ -54,11 +55,32 @@ class MapManager:
             drone.update(dt, speed=50)
 
     def draw(self) -> None:
+        self.draw_connection()
         self.grid.draw()
         for land in self.lands.values():
             land.draw()
         for drone in self.drones:
             drone.draw()
+
+    def draw_connection(self) -> None:
+        drawn = set()
+        for con in self.map_data_model.connections:
+            pair = frozenset((con.left, con.right))
+            if pair in drawn:
+                continue
+            drawn.add(pair)
+            land_a = self.lands[con.left]
+            land_b = self.lands[con.right]
+            pygame.draw.line(self.master, "magenta", land_a.pos,
+                             land_b.pos, 14)
+            mid = self._mid_point(land_a.pos, land_b.pos)
+            Label(f"{con.max_link_capacity:02d}", self.font, "white",
+                  "black", self.master, mid, anchor="center").draw()
+
+    @staticmethod
+    def _mid_point(a: tuple[float, float], b: tuple[float, float]
+                   ) -> tuple[float, float]:
+        return ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2)
 
     @property
     def _all_hubs(self) -> list[Any]:
