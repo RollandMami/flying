@@ -169,3 +169,13 @@ class Drone:
 
     def event_handler(self, event: pygame.event.Event) -> None:
         pass
+
+    def pan(self, dx: float, dy: float) -> None:
+        x, y = self.position
+        x, y = x + dx, y + dy
+        self.position = (x, y)
+        self.set_position(x, y)
+
+        if self.target_pos is not None:
+            tx, ty = self.target_pos
+            self.target_pos = (tx + dx, ty + dy)

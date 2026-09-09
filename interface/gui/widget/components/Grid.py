@@ -18,11 +18,13 @@ class Grid(BaseWidget):
         self.width = self.mrect.width
         self.height = self.mrect.height
         self.sx, self.sy = spicing
-        ox, oy = origin
 
-        line_color = pygame.Color(font_color)
-        line_color.a = alpha
+        self.line_color = pygame.Color(font_color)
+        self.line_color.a = alpha
 
+        self._build_overlay(*origin)
+
+    def _build_overlay(self, ox: int, oy: int) -> None:
         self.overlay = pygame.Surface((self.width, self.height),
                                       pygame.SRCALPHA)
 
@@ -30,11 +32,11 @@ class Grid(BaseWidget):
         starty = oy % self.sy
 
         self.columns: list[Line] = [
-            Line((x, 0), (x, self.height), line_color)
+            Line((x, 0), (x, self.height), self.line_color)
             for x in range(startx, self.width, self.sx)
         ]
         self.rows: list[Line] = [
-            Line((0, y), (self.width, y), line_color)
+            Line((0, y), (self.width, y), self.line_color)
             for y in range(starty, self.height, self.sy)
         ]
 
@@ -42,6 +44,9 @@ class Grid(BaseWidget):
             col.draw(self.overlay)
         for row in self.rows:
             row.draw(self.overlay)
+
+    def set_origin(self, ox: int, oy: int) -> None:
+        self._build_overlay(ox, oy)
 
     def draw(self) -> None:
         self.master.blit(self.overlay, (0, 0))

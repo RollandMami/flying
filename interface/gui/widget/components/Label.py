@@ -32,7 +32,7 @@ class Label(BaseWidget):
 
     def set_pos(self, pos: tuple[int, int]) -> None:
         self.position = pos
-        self.text_rect.bottomleft = self.position
+        setattr(self.text_rect, self.anchor, self.position)
 
     def set_text(self, text: str) -> None:
         self.label = text

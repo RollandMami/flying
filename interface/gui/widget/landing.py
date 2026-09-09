@@ -108,3 +108,21 @@ class Landing:
             self.l_capacitor.set_text(self._capacity_text())
         else:
             print(_to.name, "cant land any more drone")
+
+    def pan(self, dx: float, dy: float) -> None:
+        self.x += dx
+        self.y += dy
+        self.pos = pygame.Vector2(self.x, self.y)
+        self.rect.center = (self.x, self.y)
+        self.l_name.set_pos((
+            self.l_name.position[0] + dx,
+            self.l_name.position[1] + dy
+        ))
+        self.l_description.set_pos((
+            self.l_description.position[0] + dx,
+            self.l_description.position[1] + dy
+        ))
+        self.l_capacitor.set_pos((
+            self.l_capacitor.position[0] + dx,
+            self.l_capacitor.position[1] + dy
+        ))

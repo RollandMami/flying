@@ -13,12 +13,17 @@ class MapManager:
                  fg: pygame.Color,
                  master: pygame.Surface,
                  data: MapModel,
-                 margin: int = 200):
+                 margin: int = 200,
+                 speed: int = 50,
+                 pan_speed: int = 300) -> None:
         self.bg = bg
         self.fg = fg
         self.font = font
+        self.speed = speed
         self.master = master
         self.margin = margin
+        self._dragging = False
+        self.pan_speed = pan_speed
         self.map_data_model = data
         self.offset_x, self.offset_y = self._compute_offset()
         self.grid = Grid(None, self.bg, self.fg,
@@ -31,7 +36,7 @@ class MapManager:
                               self.master, "red", hub,
                               data.connections, 30,
                               offset=(self.offset_x, self.offset_y),
-                              margin=self.margin, )
+                              margin=self.margin)
             for hub in self._all_hubs
             }
         start = self.map_data_model.start_hub
@@ -46,13 +51,30 @@ class MapManager:
             self.lands["start"].receive(drone)
 
     def event_handler(self, event: pygame.event.Event) -> None:
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                self.lands["start"].send(self.lands["waypoint1"])
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            self._dragging = True
+        elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+            self._dragging = False
+        elif event.type == pygame.MOUSEMOTION and self._dragging:
+            dx, dy = event.rel
+            self.pan(dx, dy)
 
     def update(self, dt: float) -> None:
+        keys = pygame.key.get_pressed()
+        dx = dy = 0.0
+        if keys[pygame.K_LEFT]:
+            dx += self.pan_speed * dt
+        if keys[pygame.K_RIGHT]:
+            dx -= self.pan_speed * dt
+        if keys[pygame.K_UP]:
+            dy += self.pan_speed * dt
+        if keys[pygame.K_DOWN]:
+            dy -= self.pan_speed * dt
+        if dx or dy:
+            self.pan(dx, dy)
+
         for drone in self.drones:
-            drone.update(dt, speed=50)
+            drone.update(dt, self.speed)
 
     def draw(self) -> None:
         self.draw_connection()
@@ -72,7 +94,7 @@ class MapManager:
             land_a = self.lands[con.left]
             land_b = self.lands[con.right]
             pygame.draw.line(self.master, "magenta", land_a.pos,
-                             land_b.pos, 14)
+                             land_b.pos, 8)
             mid = self._mid_point(land_a.pos, land_b.pos)
             Label(f"{con.max_link_capacity:02d}", self.font, "white",
                   "black", self.master, mid, anchor="center").draw()
@@ -108,3 +130,12 @@ class MapManager:
         scaled_cx = bcx * self.margin
         scaled_cy = bcy * self.margin
         return mcx - scaled_cx, mcy - scaled_cy
+
+    def pan(self, dx: float, dy: float) -> None:
+        self.offset_x += dx
+        self.offset_y += dy
+        for land in self.lands.values():
+            land.pan(dx, dy)
+        for drone in self.drones:
+            drone.pan(dx, dy)
+        self.grid.set_origin(int(self.offset_x), int(self.offset_y))
