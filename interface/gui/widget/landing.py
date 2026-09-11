@@ -1,11 +1,9 @@
-# from typing import Protocol, Any
-from collections import deque
-
 import pygame
 from infrastructure import map_model as mm
 from ..settings import rainbow
 from .drone import Drone
 from .components import Label
+from core.Station import Station
 from functools import partial
 
 
@@ -22,24 +20,14 @@ class Landing:
                  offset: tuple[int, int] = (0, 0),
                  margin: int = 1,
                  ) -> None:
-        ox, oy = offset
+        self.logic = Station(hub, link, offset, margin)
         self.bg = bg
         self.fg = fg
-        self.x = hub.x * margin + ox
-        self.y = hub.y * margin + oy
         self.r = radius
         self.font = font
         self.master = master
-        self.cost = hub.cost
-        self.name = hub.name
         self.default_color = default
-        self.max_capacity = hub.max_drone
-        self.description = hub.description
-        self.is_priority = hub.is_priority
-        self.is_crossable = hub.is_crossable
-        self.pos = pygame.Vector2(self.x, self.y)
         self.color: list[pygame.Color] = self._resolve_color(hub.color)
-        self.drones: deque[Drone] = deque()
         self.rect = pygame.Rect(self.x - self.r,
                                 self.y - self.r,
                                 2 * self.r, 2 * self.r)
@@ -49,16 +37,39 @@ class Landing:
         self.l_name = base_lbl(self.name.upper(), position=(x, y - 70))
         self.l_description = base_lbl(self.description, position=(x, y - 55))
         self.l_capacitor = base_lbl(
-            self._capacity_text(), position=(x, y - 40))
-        self.connected_hubs: dict[str, int] = {}
-        self._fill_connection(link)
+            self.logic._capacity_text(), position=(x, y - 40))
 
-    def _fill_connection(self, link: list[mm.Con]) -> None:
-        for con in link:
-            if self.name == con.left:
-                self.connected_hubs[con.right] = con.max_link_capacity
-            elif self.name == con.right:
-                self.connected_hubs[con.left] = con.max_link_capacity
+    @property
+    def x(self) -> float:
+        return self.logic.x
+
+    @property
+    def y(self) -> float:
+        return self.logic.y
+
+    @property
+    def pos(self) -> tuple[float, float]:
+        return self.logic.pos
+
+    @property
+    def name(self) -> str:
+        return self.logic.name
+
+    @property
+    def description(self) -> str:
+        return self.logic.description
+
+    @property
+    def max_capacity(self) -> int:
+        return self.logic.max_capacity
+
+    @property
+    def drones(self):
+        return self.logic.drones
+
+    @property
+    def connected_hubs(self) -> dict[str, int]:
+        return self.logic.connected_hubs
 
     def draw_rainbow_rings(self, surface: pygame.Surface,
                            center: tuple[float, float], max_radius: float,
@@ -76,9 +87,6 @@ class Landing:
         self.l_description.draw()
         self.l_capacitor.draw()
 
-    def _capacity_text(self) -> str:
-        return f"DRN: {len(self.drones):02d}/{self.max_capacity:02d}"
-
     def _resolve_color(self, col: str | None
                        ) -> list[pygame.Color]:
         if not col:
@@ -87,32 +95,19 @@ class Landing:
             return [pygame.Color(*rgb) for rgb in rainbow()]
         return [pygame.Color(col)]
 
-    def _is_connected_to(self, _to: "Landing") -> bool:
-        return _to.name in self.connected_hubs
+    def receive(self, drn: Drone) -> bool:
+        if not self.logic.receive(drn):
+            return False
+        self.l_capacitor.set_text(self.logic._capacity_text())
+        return True
 
-    def can_land(self) -> bool:
-        return len(self.drones) < self.max_capacity
-
-    def receive(self, drn: Drone) -> None:
-        if self.can_land():
-            self.drones.append(drn)
-            self.l_capacitor.set_text(self._capacity_text())
-
-    def send(self, _to: "Landing") -> None:
-        if not self.drones:
-            raise ValueError("Lands don't have drones")
-        if _to.can_land():
-            drn = self.drones.popleft()
-            _to.receive(drn)
-            drn.move(_to.pos)
-            self.l_capacitor.set_text(self._capacity_text())
-        else:
-            print(_to.name, "cant land any more drone")
+    def send(self, _to: "Landing", nb: int = 1) -> None:
+        self.logic.send(_to.logic, nb)
+        self.l_capacitor.set_text(self.logic._capacity_text())
+        _to.l_capacitor.set_text(_to.logic._capacity_text())
 
     def pan(self, dx: float, dy: float) -> None:
-        self.x += dx
-        self.y += dy
-        self.pos = pygame.Vector2(self.x, self.y)
+        self.logic.pan(dx, dy)
         self.rect.center = (self.x, self.y)
         self.l_name.set_pos((
             self.l_name.position[0] + dx,

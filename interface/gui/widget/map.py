@@ -4,6 +4,7 @@ from .landing import Landing
 from .components import Grid, Label
 from typing import Any
 from .drone import Drone
+from core.ResidualGraph import ResidualGraph
 
 
 class MapManager:
@@ -21,6 +22,13 @@ class MapManager:
         self.font = font
         self.speed = speed
         self.master = master
+        self.graph = ResidualGraph(
+            data,
+            viewport_center=master.get_rect().center,
+            margin=margin,
+            speed=speed,
+            pan_speed=pan_speed
+        )
         self.margin = margin
         self._dragging = False
         self.pan_speed = pan_speed
@@ -40,6 +48,10 @@ class MapManager:
             for hub in self._all_hubs
             }
         start = self.map_data_model.start_hub
+        end = self.map_data_model.end_hub
+
+        self.start_land = self.lands[start.name]
+        self.end_land = self.lands[end.name]
         sx = start.x * self.margin + self.offset_x
         sy = start.y * self.margin + self.offset_y
         Drone.reset_ids()
@@ -48,7 +60,7 @@ class MapManager:
             for _ in range(self.map_data_model.nb_drones)
         ]
         for drone in self.drones:
-            self.lands["start"].receive(drone)
+            self.start_land.receive(drone)
 
     def event_handler(self, event: pygame.event.Event) -> None:
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -114,8 +126,11 @@ class MapManager:
 
     @property
     def _bounds(self) -> tuple[int, int, int, int]:
-        xs = [hub.x for hub in self._all_hubs]
-        ys = [hub.y for hub in self._all_hubs]
+        hubs = self._all_hubs
+        if not hubs:
+            raise ValueError("Not any Hub detected")
+        xs = [hub.x for hub in hubs]
+        ys = [hub.y for hub in hubs]
         return min(xs), max(xs), min(ys), max(ys)
 
     @property
@@ -123,7 +138,7 @@ class MapManager:
         minx, maxx, miny, maxy = self._bounds
         return (maxx + minx) / 2, (maxy + miny) / 2
 
-    def _compute_offset(self) -> None:
+    def _compute_offset(self) -> tuple[float, float]:
         mcx, mcy = self.master.get_rect().center
         bcx, bcy = self._center
 

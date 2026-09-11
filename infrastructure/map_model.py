@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Optional
 import webcolors
 
 try:
@@ -116,7 +115,7 @@ class Hub(BaseModel):
 class Con(BaseModel):
     left: str
     right: str
-    max_link_capacity: Optional[int] = Field(default=1, ge=1)
+    max_link_capacity: int = Field(default=1, ge=1)
 
     @model_validator(mode="after")
     def check_no_self_loop(self) -> "Con":
@@ -170,6 +169,7 @@ class MapModel(BaseModel):
     def apply_max_capacity(self) -> "MapModel":
         self.start_hub.meta.max_drones = self.nb_drones
         self.end_hub.meta.max_drones = self.nb_drones
+        return self
 
     def get_hub(self, name: str) -> Hub:
         if self.start_hub.name == name:

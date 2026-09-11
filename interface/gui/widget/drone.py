@@ -3,6 +3,7 @@ from ..assets import assets
 import itertools
 from typing import Protocol
 from .components import Label
+from core.AirCrossPlane import AirCrossPlane
 
 
 class Icons(Protocol):
@@ -14,8 +15,6 @@ class Icons(Protocol):
 
 
 class Drone:
-    _next_id = 0
-
     class Animate:
 
         _resize_cache: dict[
@@ -80,50 +79,39 @@ class Drone:
                  sprite_size: int | tuple[int, int] | None = None,
                  l_name: str = "Zone Neutre",
                  show_id: bool = False) -> None:
-        self.position = position
+        self.logic = AirCrossPlane(position, l_name)
         self.bg = bg
         self.font = assets.BOPS_FONT(10)
-        self.land_name = l_name
         self.master = master
         self.width = width
         self.height = height
-        self.target_pos = None
-        self._id = Drone._next_id
-        Drone._next_id += 1
         self.show_id = show_id
 
         self.rect = pygame.Rect((0, 0), (self.width, self.height))
-        self.rect.center = self.position
+        self.rect.center = self.logic.position
         self.anim = self.Animate(self.rect, sprite_size)
-        self.id_lbl = Label(f"{self._id:02d}", self.font,
+        self.id_lbl = Label(f"D{self.logic.id:02d}", self.font,
                             self.bg, "white", self.master,
-                            self._label_pos(*self.position),
+                            self._label_pos(*self.logic.position),
                             anchor="center")
 
     def draw(self) -> None:
-        # pygame.draw.rect(self.master, self.bg, self.rect)
         self.anim.actual_img.draw(
             self.master,
             self.anim.actual_img_rect.topleft)
         if self.show_id:
             self.id_lbl.draw()
 
-    @classmethod
-    def reset_ids(cls) -> None:
-        cls._next_id = 1
-
     def _label_pos(self, x: float, y: float) -> tuple[float, float]:
         return (x, y - self.height // 2)
 
-    def set_position(self, x: float, y: float) -> None:
+    def _sync_position(self) -> None:
+        x, y = self.logic.position
         self.rect.center = (x, y)
         self.anim.actual_img_rect = self.anim.actual_img.get_rect(
             center=self.rect.center
         )
         self.id_lbl.set_pos(self._label_pos(x, y))
-
-    def move(self, new_pos: tuple[int, int]) -> None:
-        self.target_pos = new_pos
 
     def set_anim(self, dt: float, anim: str | None) -> None:
         if not anim or anim == "idle":
@@ -136,46 +124,26 @@ class Drone:
             self.anim.death(dt)
 
     def update(self, dt: int, speed: float) -> None:
-        if self.target_pos is None:
-            self.set_anim(dt, "idle")
-            return
+        moved = self.logic.update(dt, speed)
+        self.set_anim(dt, "walk" if moved else "idle")
+        if moved:
+            self._sync_position()
 
-        x, y = self.position
-        target_x, target_y = self.target_pos
-        dx = target_x - x
-        dy = target_y - y
-        distance = (dx ** 2 + dy ** 2) ** 0.5
-
-        if distance == 0:
-            self.target_pos = None
-            self.set_anim(dt, "idle")
-            return
-
-        self.set_anim(dt, "walk")
-        movement = speed * dt
-
-        if distance <= movement:
-            x = target_x
-            y = target_y
-        else:
-            x += dx / distance * movement
-            y += dy / distance * movement
-
-        self.position = (x, y)
-        self.set_position(x, y)
-
-        if self.position == self.target_pos:
-            self.target_pos = None
-
-    def event_handler(self, event: pygame.event.Event) -> None:
-        pass
+    def move(self, new_pos: tuple[int, int]) -> None:
+        self.logic.move(new_pos)
 
     def pan(self, dx: float, dy: float) -> None:
-        x, y = self.position
-        x, y = x + dx, y + dy
-        self.position = (x, y)
-        self.set_position(x, y)
+        self.logic.pan(dx, dy)
+        self._sync_position()
 
-        if self.target_pos is not None:
-            tx, ty = self.target_pos
-            self.target_pos = (tx + dx, ty + dy)
+    @classmethod
+    def reset_ids(cls) -> None:
+        AirCrossPlane.reset_ids()
+
+    @property
+    def position(self) -> tuple[int, int]:
+        return self.logic.position
+
+    @property
+    def land_name(self) -> str:
+        return self.logic.land_name
