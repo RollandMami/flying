@@ -4,7 +4,6 @@ from .landing import Landing
 from .components import Grid, Label
 from typing import Any
 from .drone import Drone
-from core.ResidualGraph import ResidualGraph
 
 
 class MapManager:
@@ -22,13 +21,6 @@ class MapManager:
         self.font = font
         self.speed = speed
         self.master = master
-        self.graph = ResidualGraph(
-            data,
-            viewport_center=master.get_rect().center,
-            margin=margin,
-            speed=speed,
-            pan_speed=pan_speed
-        )
         self.margin = margin
         self._dragging = False
         self.pan_speed = pan_speed
@@ -105,8 +97,9 @@ class MapManager:
             drawn.add(pair)
             land_a = self.lands[con.left]
             land_b = self.lands[con.right]
-            pygame.draw.line(self.master, "magenta", land_a.pos,
-                             land_b.pos, 8)
+            thickness = 6 + int(0.8 * con.max_link_capacity)
+            pygame.draw.line(self.master, "grey", land_a.pos,
+                             land_b.pos, thickness)
             mid = self._mid_point(land_a.pos, land_b.pos)
             Label(f"{con.max_link_capacity:02d}", self.font, "white",
                   "black", self.master, mid, anchor="center").draw()

@@ -62,6 +62,19 @@ class ResidualGraph:
         return min(xs), max(xs), min(ys), max(ys)
 
     @property
+    def _finished(self) -> bool:
+        return all(
+            self._is_close(drone.position, self.end_land.pos)
+            for drone in self.drones
+        )
+
+    @staticmethod
+    def _is_close(a: tuple[float, float],
+                  b: tuple[float, float],
+                  tol: float = 1.0) -> bool:
+        return abs(a[0] - b[0]) <= tol and abs(a[1] - b[1]) <= tol
+
+    @property
     def _center(self) -> tuple[float, float]:
         minx, maxx, miny, maxy = self._bounds
         return (maxx + minx) / 2, (maxy + miny) / 2
