@@ -1,9 +1,21 @@
 from .base_mfmc import BaseMFMC
 from typing import Any
 from .ResidualGraph import ResidualGraph
+from .Station import Station
 
 
 class Solver(BaseMFMC):
+    def costxcapaticy(self, hubs: Station) -> int:
+        ...
+
+    def getPath(self,
+                hubs: Station,
+                start,
+                goal,
+                path=None
+                ) -> list[list[Station]]:
+        path = (path or []) + [start]
+
     def solve(self,
               graph: ResidualGraph
               ) -> dict[str, Any]:
