@@ -2,19 +2,28 @@ from .base_mfmc import BaseMFMC
 from typing import Any
 from .ResidualGraph import ResidualGraph
 from .Station import Station
-
+from math import inf
 
 class Solver(BaseMFMC):
     def costxcapaticy(self, hubs: Station) -> int:
-        ...
+        return hubs.cost * hubs.max_capacity
 
-    def getPath(self,
-                hubs: Station,
-                start,
-                goal,
+    def findPath(self,
+                graph: ResidualGraph,
+                start: Station,
+                goal: Station,
                 path=None
-                ) -> list[list[Station]]:
-        path = (path or []) + [start]
+                ):
+        parent = {}
+        pile = []
+        pile.append(start)
+        current: Station = start
+        while pile and current != goal:
+            voisin = current.connected_hubs
+
+            for v in voisin:
+                if voisin[v]
+
 
     def solve(self,
               graph: ResidualGraph
